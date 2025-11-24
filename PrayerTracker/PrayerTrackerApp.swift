@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct TodoAppApp: App {
+struct PrayerTrackerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
