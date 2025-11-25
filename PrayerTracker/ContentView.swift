@@ -7,25 +7,35 @@
 
 import SwiftUI
 
+struct Prayer: Identifiable {
+    let id = UUID()
+    let name: String
+    let parts: [String]
+    
+    static let fajr = Prayer(name:"Fajr", parts: ["Sunnah, Fardh"])
+    static let example1 = Prayer(name: "Fajr", parts: ["Sunnah", "Fardh"])
+}
+
 struct ContentView: View {
     @State private var completedPrayers: Set<String> = []
-    
-    let prayers = ["Fajr", "Dhur", "Asr", "Maghirb", "Isha"]
+            
+    let prayer: [Prayer] = [.example1]
     
     var body: some View {
         VStack {
             NavigationStack{
                 List {
-                    ForEach(prayers, id:  \.self) { prayer in
+                    ForEach(prayer) { prayer in
                         HStack{
-                            Text(prayer)
+                            Text(prayer.name)
                             Spacer()
                             Image(systemName: completedPrayers.contains(prayer) ? "checkmark.circle.fill" : "circle")
                                 .foregroundStyle(completedPrayers.contains(prayer) ? .green : .gray)
+                                .font(.system(size: 23))
                         }
                         .onTapGesture{
                             if completedPrayers.contains(prayer){
-                                completedPrayers.remove(prayer)
+                                completedPrayers.remove(prayer.name)
                             } else {
                                 completedPrayers.insert(prayer)
                             }
