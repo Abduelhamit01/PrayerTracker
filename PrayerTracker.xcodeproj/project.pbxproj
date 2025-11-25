@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F063448F2ED6586D00584F06 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F063448E2ED6586900584F06 /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		F063448E2ED6586900584F06 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrayerTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -32,6 +37,7 @@
 		F0D242E52ED46156003CB2D9 = {
 			isa = PBXGroup;
 			children = (
+				F063448E2ED6586900584F06 /* .gitignore */,
 				F0D242F02ED46156003CB2D9 /* PrayerTracker */,
 				F0D242EF2ED46156003CB2D9 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F063448F2ED6586D00584F06 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
