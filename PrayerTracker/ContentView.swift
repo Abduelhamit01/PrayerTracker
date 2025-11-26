@@ -18,15 +18,32 @@ struct ContentView: View {
     @State private var completedPartsOfPrayer: Set<String> = []
     
     let prayers: [Prayer] = [
-        Prayer(name: "Fajr",     parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Dhuhr",    parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Asr",      parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Maghrib",  parts: ["Fardh", "Sunnah"]),
-        Prayer(name: "Isha",     parts: ["Fardh", "Sunnah", "Witr"])
+        Prayer(name: "Fajr", parts: ["Sunnah", "Fardh"]),
+        Prayer(name: "Dhuhr", parts: ["Sunnah", "Fardh"]),
+        Prayer(name: "Asr", parts: ["Sunnah", "Fardh"]),
+        Prayer(name: "Maghrib", parts: ["Fardh", "Sunnah"]),
+        Prayer(name: "Isha",parts: ["Fardh", "Sunnah", "Witr"])
     ]
     
     private func isPartCompleted(prayerId: UUID, part: String) -> Bool {
         completedPartsOfPrayer.contains("\(prayerId)-\(part)")
+    }
+    
+    private func checkMarkImage(isCompleted: Bool) -> some View {
+        Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+            .foregroundStyle(isCompleted ? .green : .gray)
+            .font(.system(size: 23))
+    }
+    
+    private func toggleAllParts(of prayer: Prayer, to complete: Bool ){
+        for part in prayer.parts {
+            let key = "\(prayer.id)-\(part)"
+            if completedPartsOfPrayer.contains(key){
+                completedPartsOfPrayer.remove(key)
+            } else{
+                completedPartsOfPrayer.insert(key)
+            }
+        }
     }
     
     var body: some View {
@@ -38,9 +55,7 @@ struct ContentView: View {
                             HStack {
                                 Text(part)
                                 Spacer()
-                                Image(systemName: isPartCompleted(prayerId: prayer.id, part: part) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(isPartCompleted(prayerId: prayer.id, part: part) ? .green : .gray)
-                                    .font(.system(size: 23))
+                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -57,16 +72,22 @@ struct ContentView: View {
                             Text(prayer.name)
                             Spacer()
                             let allCompleted = prayer.parts.allSatisfy {
-                                        isPartCompleted(prayerId: prayer.id, part: $0)
-                                    }
-                            Image(systemName: allCompleted ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(allCompleted ? .green : .gray)
-                                .font(.system(size: 23))
+                                isPartCompleted(prayerId: prayer.id, part: $0)
+                            }
+                            checkMarkImage(isCompleted: allCompleted)
+                            
+                        }
+                        .onTapGesture {
+                            let allCompleted = prayer.parts.allSatisfy{
+                                isPartCompleted(prayerId: prayer.id, part: $0)
+                            }
+                                toggleAllParts(of: prayer, to: !allCompleted)
                         }
                     }
+                    
                 }
-                .navigationTitle("Gebetszeiten")
             }
+            .navigationTitle("Gebetszeiten")
         }
     }
 }
