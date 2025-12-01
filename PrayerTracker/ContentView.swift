@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct Prayer: Identifiable {
-    let id = UUID()
+    let id: String  // String statt UUID
     let name: String
     let parts: [String]
 }
 
 struct ContentView: View {
     
-    @State private var completedPartsOfPrayer: Set<String> = []
+    @AppStorage("completedParts") private var completedPartsData: Data = Data()
     
     let prayers: [Prayer] = [
-        Prayer(name: "Fajr", parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Dhuhr", parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Asr", parts: ["Sunnah", "Fardh"]),
-        Prayer(name: "Maghrib", parts: ["Fardh", "Sunnah"]),
-        Prayer(name: "Isha",parts: ["Fardh", "Sunnah", "Witr"])
+        Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"]),
+        Prayer(id: "dhuhr", name: "Dhuhr", parts: ["Sunnah", "Fardh"]),
+        Prayer(id: "asr", name: "Asr", parts: ["Sunnah", "Fardh"]),
+        Prayer(id: "maghrib", name: "Maghrib", parts: ["Fardh", "Sunnah"]),
+        Prayer(id: "isha", name: "Isha", parts: ["Fardh", "Sunnah", "Witr"])
     ]
     
-    private func isPartCompleted(prayerId: UUID, part: String) -> Bool {
-        completedPartsOfPrayer.contains("\(prayerId)-\(part)")
+    private func isPartCompleted(prayerId: String, part: String) -> Bool {
+        let key = "\(prayerId)-\(part)"
+        return completedParts.contains(key)
     }
     
     private func checkMarkImage(isCompleted: Bool) -> some View {
@@ -35,15 +36,53 @@ struct ContentView: View {
             .font(.system(size: 23))
     }
     
-    private func toggleAllParts(of prayer: Prayer, to complete: Bool ){
+    private func setAllParts(of prayer: Prayer, to complete: Bool ){
         for part in prayer.parts {
             let key = "\(prayer.id)-\(part)"
-            if completedPartsOfPrayer.contains(key){
-                completedPartsOfPrayer.remove(key)
-            } else{
-                completedPartsOfPrayer.insert(key)
+            let isCurrentlyCompleted = completedParts.contains(key)
+            
+            if complete && !isCurrentlyCompleted {
+                addKey(key)
+            }else if !complete && isCurrentlyCompleted {
+                removeKey(key)
             }
         }
+    }
+    
+    private func togglePartCompletion(key: String) {
+        if completedParts.contains(key) {
+            removeKey(key)
+        } else {
+            addKey(key)
+        }
+    }
+    
+    private var completedParts: Set<String> {
+        guard let decoded = try? JSONDecoder().decode(Set<String>.self, from: completedPartsData) else {
+            return []
+        }
+        return decoded
+    }
+
+    private func updateCompletedParts(_ newSet: Set<String>) {
+        guard let encoded = try? JSONEncoder().encode(newSet) else { return }
+        completedPartsData = encoded
+    }
+
+    private func addKey(_ key: String) {
+        var parts = completedParts
+        parts.insert(key)
+        updateCompletedParts(parts)
+    }
+
+    private func removeKey(_ key: String) {
+        var parts = completedParts
+        parts.remove(key)
+        updateCompletedParts(parts)
+    }
+    
+    private func clearAllCompletions() {
+        updateCompletedParts([])
     }
     
     var body: some View {
@@ -53,41 +92,39 @@ struct ContentView: View {
                     DisclosureGroup {
                         ForEach(prayer.parts, id: \.self) { part in
                             HStack {
+                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                                 Text(part)
                                 Spacer()
-                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 let key = "\(prayer.id)-\(part)"
-                                if completedPartsOfPrayer.contains(key) {
-                                    completedPartsOfPrayer.remove(key)
-                                } else {
-                                    completedPartsOfPrayer.insert(key)
-                                }
+                                togglePartCompletion(key: key)
                             }
                         }
                     } label: {
                         HStack {
-                            Text(prayer.name)
-                            Spacer()
                             let allCompleted = prayer.parts.allSatisfy {
                                 isPartCompleted(prayerId: prayer.id, part: $0)
                             }
                             checkMarkImage(isCompleted: allCompleted)
-                            
+                            Text(prayer.name)
                         }
                         .onTapGesture {
                             let allCompleted = prayer.parts.allSatisfy{
                                 isPartCompleted(prayerId: prayer.id, part: $0)
                             }
-                                toggleAllParts(of: prayer, to: !allCompleted)
+                                setAllParts(of: prayer, to: !allCompleted)
                         }
                     }
-                    
                 }
             }
             .navigationTitle("Gebetszeiten")
+            .toolbar{
+                Button("", systemImage: "trash.fill", action: {
+                    clearAllCompletions()
+                })
+            }
         }
     }
 }
