@@ -81,6 +81,9 @@ struct ContentView: View {
         updateCompletedParts(parts)
     }
     
+    private func clearAllCompletions() {
+        updateCompletedParts([])
+    }
     
     var body: some View {
         NavigationStack {
@@ -89,9 +92,9 @@ struct ContentView: View {
                     DisclosureGroup {
                         ForEach(prayer.parts, id: \.self) { part in
                             HStack {
+                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                                 Text(part)
                                 Spacer()
-                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -101,13 +104,11 @@ struct ContentView: View {
                         }
                     } label: {
                         HStack {
-                            Text(prayer.name)
-                            Spacer()
                             let allCompleted = prayer.parts.allSatisfy {
                                 isPartCompleted(prayerId: prayer.id, part: $0)
                             }
                             checkMarkImage(isCompleted: allCompleted)
-                            
+                            Text(prayer.name)
                         }
                         .onTapGesture {
                             let allCompleted = prayer.parts.allSatisfy{
@@ -116,10 +117,14 @@ struct ContentView: View {
                                 setAllParts(of: prayer, to: !allCompleted)
                         }
                     }
-                    
                 }
             }
             .navigationTitle("Gebetszeiten")
+            .toolbar{
+                Button("", systemImage: "trash.fill", action: {
+                    clearAllCompletions()
+                })
+            }
         }
     }
 }
