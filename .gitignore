@@ -18,3 +18,24 @@ xcuserdata/
 # Swift Package Manager
 .build/
 Packages/
+
+# Xcode user-specific stuff – NIE committen!
+*.xcuserstate
+*.xcuserdatatype
+xcuserdata/
+
+# Andere Xcode-Müll-Dateien
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.build/
+Packages/
