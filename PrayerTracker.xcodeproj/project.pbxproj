@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F063448F2ED6586D00584F06 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F063448E2ED6586900584F06 /* .gitignore */; };
+		F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F06344A32EE4126A00584F06 /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			);
 			name = PrayerTracker;
 			packageProductDependencies = (
+				F06344A32EE4126A00584F06 /* ConfettiSwiftUI */,
 			);
 			productName = TodoApp;
 			productReference = F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */;
@@ -100,6 +103,9 @@
 			);
 			mainGroup = F0D242E52ED46156003CB2D9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F0D242EF2ED46156003CB2D9 /* Products */;
 			projectDirPath = "";
@@ -339,6 +345,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F06344A32EE4126A00584F06 /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F0D242E62ED46156003CB2D9 /* Project object */;
 }

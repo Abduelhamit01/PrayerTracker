@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ConfettiSwiftUI
 
 struct Prayer: Identifiable {
     let id: String  // String statt UUID
@@ -14,6 +15,8 @@ struct Prayer: Identifiable {
 }
 
 struct ContentView: View {
+    
+    @State private var trigger: Int = 0
     
     @AppStorage("completedParts") private var completedPartsData: Data = Data()
     
@@ -100,6 +103,7 @@ struct ContentView: View {
                             .onTapGesture {
                                 let key = "\(prayer.id)-\(part)"
                                 togglePartCompletion(key: key)
+                               
                             }
                         }
                     } label: {
@@ -111,10 +115,16 @@ struct ContentView: View {
                             Text(prayer.name)
                         }
                         .onTapGesture {
-                            let allCompleted = prayer.parts.allSatisfy{
+                            let wasCompleted = prayer.parts.allSatisfy{
                                 isPartCompleted(prayerId: prayer.id, part: $0)
                             }
-                                setAllParts(of: prayer, to: !allCompleted)
+                            let willBeCompleted = !wasCompleted
+                            
+                            setAllParts(of: prayer, to: willBeCompleted)
+
+                            if willBeCompleted {
+                                trigger += 1
+                            }
                         }
                     }
                 }
@@ -126,6 +136,12 @@ struct ContentView: View {
                 })
             }
         }
+        .confettiCannon(trigger: $trigger, confettis: [.text("🤲"), .text("🕌"), .text("🌟"), .text("✨"), .text("📿")],
+                        confettiSize: 15,
+                        rainHeight: 1000, radius: 400,
+                        repetitionInterval: 0.3,
+        )
+
     }
 }
 
