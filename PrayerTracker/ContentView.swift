@@ -36,7 +36,7 @@ struct ContentView: View {
     private func checkMarkImage(isCompleted: Bool) -> some View {
         Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
             .foregroundStyle(isCompleted ? .green : .gray)
-            .font(.system(size: 23))
+            .font(.system(size: 20))
     }
     
     private func setAllParts(of prayer: Prayer, to complete: Bool ){
@@ -95,15 +95,26 @@ struct ContentView: View {
                     DisclosureGroup {
                         ForEach(prayer.parts, id: \.self) { part in
                             HStack {
-                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                                 Text(part)
                                 Spacer()
+                                checkMarkImage(isCompleted: isPartCompleted(prayerId: prayer.id, part: part))
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 let key = "\(prayer.id)-\(part)"
+                                
+                                let wereCompleted = prayer.parts.allSatisfy{
+                                    isPartCompleted(prayerId: prayer.id, part: $0)
+                                }
                                 togglePartCompletion(key: key)
-                               
+                                
+                                let areAllCompletedNow = prayer.parts.allSatisfy {
+                                    isPartCompleted(prayerId: prayer.id, part: $0)
+                                }
+                                
+                                if !wereCompleted && areAllCompletedNow {
+                                    trigger += 1
+                                }
                             }
                         }
                     } label: {
@@ -111,8 +122,9 @@ struct ContentView: View {
                             let allCompleted = prayer.parts.allSatisfy {
                                 isPartCompleted(prayerId: prayer.id, part: $0)
                             }
-                            checkMarkImage(isCompleted: allCompleted)
                             Text(prayer.name)
+                            Spacer()
+                            checkMarkImage(isCompleted: allCompleted)
                         }
                         .onTapGesture {
                             let wasCompleted = prayer.parts.allSatisfy{
@@ -136,12 +148,11 @@ struct ContentView: View {
                 })
             }
         }
-        .confettiCannon(trigger: $trigger, confettis: [.text("🤲"), .text("🕌"), .text("🌟"), .text("✨"), .text("📿")],
+        .confettiCannon(trigger: $trigger, confettis: [.text("🤲"), .text("🕌"), .text("🌟"), .text("✨"), .text("📿"), .text("🥳")],
                         confettiSize: 15,
                         rainHeight: 1000, radius: 400,
                         repetitionInterval: 0.3,
         )
-
     }
 }
 
