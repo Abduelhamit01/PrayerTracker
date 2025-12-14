@@ -76,6 +76,7 @@ struct ContentView: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
         .confettiCannon(
             trigger: $trigger,
             confettis: [.text("🤲"), .text("🕌"), .text("🌟"), .text("✨"), .text("📿"), .text("🥳")],
@@ -113,7 +114,7 @@ struct ContentView: View {
     private func checkMarkImage(isCompleted: Bool) -> some View {
         Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
             .foregroundStyle(isCompleted ? .green : .gray)
-            .font(.system(size: 20))
+            .font(.system(size: 30))
     }
 }
 

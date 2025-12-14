@@ -57,8 +57,6 @@ struct WelcomePage: View {
                             .background(.orange)
                             .cornerRadius(10)
                         }
-
-
                     }
                     .padding(.horizontal, 30)
                     .padding(.top, 50)
