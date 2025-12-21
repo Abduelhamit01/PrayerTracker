@@ -83,15 +83,14 @@ struct DayButton: View {
         .padding(.vertical, 10)
         .background {
             if isSelected {
-                Circle()
+                RoundedRectangle(cornerRadius: 13)
                     .fill(Color(red: 0/255, green: 144/255, blue: 0/255))
                     .matchedGeometryEffect(id: "selectedDay", in: namespace)
             } else {
-                Circle()
+                RoundedRectangle(cornerRadius: 20)
                     .fill(Color(.secondarySystemBackground))
             }
         }
-        .frame(width: 48, height: 48)
         .onTapGesture(perform: onTap)
     }
 }
