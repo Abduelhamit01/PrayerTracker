@@ -8,34 +8,6 @@
 import SwiftUI
 import ConfettiSwiftUI
 
-enum PrayerColor {
-    static func color(for prayerName: String) -> Color {
-        switch prayerName.lowercased() {
-        case "fajr":
-            return Color(red: 100/255, green: 150/255, blue: 200/255) // Morgenblau
-        case "dhuhr":
-            return Color(red: 255/255, green: 200/255, blue: 50/255) // Sonnengelb
-        case "asr":
-            return Color(red: 255/255, green: 140/255, blue: 60/255) // Orange
-        case "maghrib":
-            return Color(red: 230/255, green: 100/255, blue: 120/255) // Sonnenuntergang-Rosa
-        case "isha":
-            return Color(red: 120/255, green: 80/255, blue: 160/255) // Nachtlila
-        default:
-            return Color.gray
-        }
-    }
-    
-    static func gradient(for prayerName: String) -> LinearGradient {
-        let baseColor = color(for: prayerName)
-        return LinearGradient(
-            gradient: Gradient(colors: [baseColor.opacity(0.6), baseColor.opacity(0.3)]),
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-    }
-}
-
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @State private var trigger: Int = 0
