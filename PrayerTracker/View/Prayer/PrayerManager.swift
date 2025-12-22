@@ -51,6 +51,12 @@ class PrayerManager: ObservableObject {
         return formatter.string(from: date)
     }
     
+    func completeAllPrayers() {
+        for prayer in prayers {
+            setAllParts(of: prayer, to: true)
+        }
+    }
+    
     // Prüft, ob ein bestimmtes Teil eines Gebets erledigt ist
     func isPartCompleted(prayerId: String, part: String) -> Bool {
         let datePrefix = formatDateKey(selectedDate)

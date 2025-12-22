@@ -46,24 +46,32 @@ struct ContentView: View {
                 .listStyle(.plain)
                 .navigationTitle("PrayerTracker")
                 .toolbar {
-                    // Button, um schnell zu "Heute" zurückzukehren
-                    if !Calendar.current.isDateInToday(manager.selectedDate) {
-                        ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        // Button, um schnell zu "Heute" zurückzukehren
+                        if !Calendar.current.isDateInToday(manager.selectedDate) {
                             Button("Heute") {
                                 withAnimation {
                                     manager.selectedDate = Date()
                                 }
                             }
                         }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("", systemImage: "trash.fill") {
-                            manager.clearAllCompletions()
+                        
+                        Menu("", systemImage: "ellipsis.circle") {
+                            Button(role: .confirm) {
+                                manager.completeAllPrayers()
+                            } label: {
+                                Label("Complete all Prayers", systemImage: "checkmark.circle.fill")
+                            }
+                            Button(role: .destructive) {
+                                manager.clearAllCompletions()
+                            } label: {
+                                Label("Clear all completions", systemImage: "trash")
+                            }
                         }
                     }
                 }
             }
+            
             .tabItem {
                 Label("Home", systemImage: "house")
             }
@@ -117,3 +125,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
