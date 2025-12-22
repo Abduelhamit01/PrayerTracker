@@ -46,25 +46,29 @@ struct ContentView: View {
                 .listStyle(.plain)
                 .navigationTitle("PrayerTracker")
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        // Button, um schnell zu "Heute" zurückzukehren
-                        if !Calendar.current.isDateInToday(manager.selectedDate) {
+                    if !Calendar.current.isDateInToday(manager.selectedDate) {
+                        ToolbarItem(placement: .navigationBarLeading) {
                             Button("Heute") {
-                                withAnimation {
+                                withAnimation(.snappy) {
                                     manager.selectedDate = Date()
                                 }
                             }
                         }
-                        
+                    }
+
+                    ToolbarItem(placement: .navigationBarTrailing) {
                         Menu("", systemImage: "ellipsis.circle") {
-                            Button(role: .confirm) {
-                                manager.completeAllPrayers()
-                            } label: {
+                            Button {
+                                withAnimation(.snappy) {
+                                    manager.completeAllPrayers()
+                                }} label: {
                                 Label("Complete all Prayers", systemImage: "checkmark.circle.fill")
                             }
+
                             Button(role: .destructive) {
-                                manager.clearAllCompletions()
-                            } label: {
+                                withAnimation(.snappy) {
+                                    manager.clearAllCompletions()
+                                }} label: {
                                 Label("Clear all completions", systemImage: "trash")
                             }
                         }
