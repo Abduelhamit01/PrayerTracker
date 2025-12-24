@@ -67,7 +67,9 @@ struct DayButton: View {
         return formatter
     }
     
+    @State var offset: CGSize = .zero
     var body: some View {
+
         VStack(spacing: 8) {
             Text(dayFormatter.string(from: date).uppercased())
                 .font(.caption2)
@@ -92,6 +94,20 @@ struct DayButton: View {
             }
         }
         .onTapGesture(perform: onTap)
+        .offset(offset)
+        .gesture(
+            DragGesture()
+            .onChanged { value in
+                withAnimation(.spring()) {
+                    offset = value.translation
+                }
+            }
+                .onEnded { value in
+                    withAnimation(.spring()) {
+                        offset = .zero
+                    }
+                }
+        )
     }
 }
 

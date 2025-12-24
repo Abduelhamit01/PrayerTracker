@@ -47,7 +47,7 @@ struct ContentView: View {
                 .navigationTitle("PrayerTracker")
                 .toolbar {
                     if !Calendar.current.isDateInToday(manager.selectedDate) {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .navigationBarTrailing) {
                             Button("Heute") {
                                 withAnimation(.snappy) {
                                     manager.selectedDate = Date()
@@ -79,8 +79,15 @@ struct ContentView: View {
             .tabItem {
                 Label("Home", systemImage: "house")
             }
+
             NavigationStack {
                 Text("")
+            }
+            .tabItem {
+                Label("Ramadan", systemImage: "moon.stars.fill")
+            }
+            NavigationStack{
+                Text("Ramadan Special")
             }
             .tabItem {
                 Label("History", systemImage: "calendar")
