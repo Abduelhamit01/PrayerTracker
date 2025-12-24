@@ -124,4 +124,17 @@ class PrayerManager: ObservableObject {
         parts.remove(key)
         updateCompletedParts(parts)
     }
+    
+    func goToNextWeek() {
+        var cal = Calendar.current
+        cal.date(byAdding: .weekOfYear, value: 1, to: selectedDate)
+        
+        // Tipp: Du brauchst Calendar.current
+        // Tipp: Nutze .date(byAdding: .weekOfYear, value: 1, to: selectedDate)
+        // Tipp: Aktualisiere selectedDate mit dem neuen Datum
+    }
+
+    func goToPreviousWeek() {
+        // Das gleiche, aber mit value: -1
+    }
 }

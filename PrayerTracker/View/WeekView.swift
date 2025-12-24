@@ -11,6 +11,8 @@ struct WeekView: View {
     @ObservedObject var manager: PrayerManager
     @Namespace private var selectionNS
     
+    @State var offset: CGSize = .zero
+    
     // Hilfseigenschaften für den Kalender
     private var calendar: Calendar {
         var cal = Calendar.current
@@ -27,7 +29,7 @@ struct WeekView: View {
             calendar.date(byAdding: .day, value: day, to: startOfWeek)
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 10) {
             ForEach(daysOfWeek, id: \.self) { date in
@@ -45,6 +47,30 @@ struct WeekView: View {
         }
         .padding(.horizontal)
         .padding(.bottom, 10)
+        .offset(offset)
+        .gesture(
+            DragGesture()
+            .onChanged { value in
+                let threshold: CGFloat = 100
+                
+                if value.translation.width > threshold {
+                    print("Gehe zur vorherigen Woche")
+                } else if value.translation.width < -threshold {
+                    print("Gehe zur nächsten Woche")
+                }
+                
+                withAnimation(.spring()) {
+                    offset = value.translation
+                    print("Wisch-Distanz:", value.translation.width)
+
+                }
+            }
+                .onEnded { value in
+                    withAnimation(.spring()) {
+                        offset = .zero
+                    }
+                }
+        )
     }
 }
 
@@ -67,7 +93,6 @@ struct DayButton: View {
         return formatter
     }
     
-    @State var offset: CGSize = .zero
     var body: some View {
 
         VStack(spacing: 8) {
@@ -94,20 +119,7 @@ struct DayButton: View {
             }
         }
         .onTapGesture(perform: onTap)
-        .offset(offset)
-        .gesture(
-            DragGesture()
-            .onChanged { value in
-                withAnimation(.spring()) {
-                    offset = value.translation
-                }
-            }
-                .onEnded { value in
-                    withAnimation(.spring()) {
-                        offset = .zero
-                    }
-                }
-        )
+
     }
 }
 
