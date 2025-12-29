@@ -51,6 +51,8 @@ struct ContentView: View {
                             Button("Heute") {
                                 withAnimation(.snappy) {
                                     manager.selectedDate = Date()
+                                    
+                                    
                                 }
                             }
                         }

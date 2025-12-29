@@ -11,7 +11,7 @@ struct WeekView: View {
     @ObservedObject var manager: PrayerManager
     @Namespace private var selectionNS
     
-    @State private var position = ScrollPosition(id: "current")
+    @State var position = ScrollPosition(id: "current")
     @State private var monatsString: String = "Dezember 2025"
     
     // Hilfseigenschaften für den Kalender
@@ -94,11 +94,18 @@ struct WeekView: View {
                 position.scrollTo(id: 0)
                 updateMonthDisplay(for: 0)
             }
-
+        
             .onScrollTargetVisibilityChange(idType: Int.self) { ids in
                 if let sichtbareWoche = ids.first {
                     updateMonthDisplay(for: sichtbareWoche)
                 }
+            }
+            
+            .onChange(of: manager.selectedDate) { oldDate, newDate in
+                let offset = weekOffsetForDate(newDate)
+                position.scrollTo(id: offset)
+                updateMonthDisplay(for: offset)
+                    
             }
       }
 

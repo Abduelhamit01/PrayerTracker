@@ -15,7 +15,7 @@ class PrayerManager: ObservableObject {
             objectWillChange.send()
         }
     }
-        
+    
     let objectWillChange = PassthroughSubject<Void, Never>()
     
     private let storageKey = "completedParts"
