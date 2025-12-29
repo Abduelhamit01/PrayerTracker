@@ -15,7 +15,7 @@ class PrayerManager: ObservableObject {
             objectWillChange.send()
         }
     }
-    
+        
     let objectWillChange = PassthroughSubject<Void, Never>()
     
     private let storageKey = "completedParts"
@@ -126,15 +126,17 @@ class PrayerManager: ObservableObject {
     }
     
     func goToNextWeek() {
-        var cal = Calendar.current
-        cal.date(byAdding: .weekOfYear, value: 1, to: selectedDate)
-        
-        // Tipp: Du brauchst Calendar.current
-        // Tipp: Nutze .date(byAdding: .weekOfYear, value: 1, to: selectedDate)
-        // Tipp: Aktualisiere selectedDate mit dem neuen Datum
+        let cal = Calendar.current
+        if let newDate = cal.date(byAdding: .weekOfYear, value: 1, to: selectedDate){
+            selectedDate = newDate
+        }
     }
 
     func goToPreviousWeek() {
-        // Das gleiche, aber mit value: -1
+        let cal = Calendar.current
+        if let newDate = cal.date(byAdding: .weekOfYear, value: -1, to: selectedDate){
+            selectedDate = newDate
+        }
     }
+    
 }

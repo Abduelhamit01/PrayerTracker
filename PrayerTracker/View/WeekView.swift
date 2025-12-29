@@ -11,7 +11,8 @@ struct WeekView: View {
     @ObservedObject var manager: PrayerManager
     @Namespace private var selectionNS
     
-    @State var offset: CGSize = .zero
+    @State private var position = ScrollPosition(id: "current")
+    @State private var monatsString: String = "Dezember 2025"
     
     // Hilfseigenschaften für den Kalender
     private var calendar: Calendar {
@@ -20,60 +21,88 @@ struct WeekView: View {
         return cal
     }
     
-    private var daysOfWeek: [Date] {
+    func getWeek(zahl: Int) -> [Date] {
         let today = Date()
         let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let targetWeekStart = calendar.date(byAdding: .weekOfYear, value: zahl, to: startOfWeek)!
         
-        // Erzeuge die 7 Tage der aktuellen Woche
         return (0..<7).compactMap { day -> Date? in
-            calendar.date(byAdding: .day, value: day, to: startOfWeek)
+            calendar.date(byAdding: .day, value: day, to: targetWeekStart)
         }
     }
+    
+    func weekOffsetForDate(_ date: Date) -> Int {
+        let selectedStartOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
+        let todayStartOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date()))!
+        
+        let weeks = calendar.dateComponents([.weekOfYear], from: todayStartOfWeek, to: selectedStartOfWeek).weekOfYear ?? 0
+        return weeks
+    }
+    
+    func updateMonthDisplay(for weekOffset: Int) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        formatter.locale = Locale(identifier: "de_DE")
 
-    var body: some View {
-        HStack(spacing: 10) {
-            ForEach(daysOfWeek, id: \.self) { date in
-                DayButton(
-                    date: date,
-                    isSelected: calendar.isDate(date, inSameDayAs: manager.selectedDate),
-                    onTap: {
-                        withAnimation {
-                            manager.selectedDate = date
-                        }
-                    },
-                    namespace: selectionNS
-                )
-            }
+        let dates = getWeek(zahl: weekOffset)
+        
+        if dates.count >= 4 {
+            let donnerstag = dates[3]
+            monatsString = formatter.string(from: donnerstag)
         }
-        .padding(.horizontal)
-        .padding(.bottom, 10)
-        .offset(offset)
-        .gesture(
-            DragGesture()
-            .onChanged { value in
-                let threshold: CGFloat = 100
-                
-                if value.translation.width > threshold {
-                    print("Gehe zur vorherigen Woche")
-                } else if value.translation.width < -threshold {
-                    print("Gehe zur nächsten Woche")
-                }
-                
-                withAnimation(.spring()) {
-                    offset = value.translation
-                    print("Wisch-Distanz:", value.translation.width)
-
-                }
-            }
-                .onEnded { value in
-                    withAnimation(.spring()) {
-                        offset = .zero
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("\(monatsString)")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+            
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 0) {
+                    ForEach(-52...52, id: \.self) { weekOffset in
+                        HStack(spacing: 10) {
+                            ForEach(getWeek(zahl: weekOffset), id: \.self) { date in
+                                DayButton(
+                                    date: date,
+                                    isSelected: calendar.isDate(date, inSameDayAs: manager.selectedDate),
+                                    onTap: {
+                                        withAnimation {
+                                            manager.selectedDate = date
+                                            let offset = weekOffsetForDate(date)
+                                            position.scrollTo(id: offset)
+                                            updateMonthDisplay(for: offset)
+                                        }
+                                    },
+                                    namespace: selectionNS
+                                )
+                            }
+                        }
+                        .id(weekOffset)
+                        .containerRelativeFrame(.horizontal)
                     }
                 }
-        )
-    }
-}
+            }
+            .scrollTargetLayout()
+        }
+            .scrollPosition($position)
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
+            .padding(.bottom, 10)
+            .onAppear {
+                position.scrollTo(id: 0)
+                updateMonthDisplay(for: 0)
+            }
 
+            .onScrollTargetVisibilityChange(idType: Int.self) { ids in
+                if let sichtbareWoche = ids.first {
+                    updateMonthDisplay(for: sichtbareWoche)
+                }
+            }
+      }
+
+    
 struct DayButton: View {
     let date: Date
     let isSelected: Bool
@@ -94,8 +123,8 @@ struct DayButton: View {
     }
     
     var body: some View {
-
-        VStack(spacing: 8) {
+        
+        VStack() {
             Text(dayFormatter.string(from: date).uppercased())
                 .font(.caption2)
                 .fontWeight(.bold)
@@ -119,7 +148,7 @@ struct DayButton: View {
             }
         }
         .onTapGesture(perform: onTap)
-
+        }
     }
 }
 
