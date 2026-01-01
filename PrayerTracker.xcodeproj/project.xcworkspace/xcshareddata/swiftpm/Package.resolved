@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "originHash" : "6ad1e0d3ae43bde33043d3286afc3d98e5be09945ac257218cb6a9dba14466c3",
+=======
+  "originHash" : "e5a643cc1c8da191b5d73d1da3aec1df3773b4c5b2daf848c37d11efdf17fd28",
+>>>>>>> eb60300e3c22a387d923e93d18591a45cef334a3
   "pins" : [
     {
       "identity" : "confettiswiftui",
@@ -9,6 +13,18 @@
         "revision" : "79666d42b882bf7921b1941fa7c636d681d77980",
         "version" : "2.0.3"
       }
+<<<<<<< HEAD
+=======
+    },
+    {
+      "identity" : "fscalendar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/WenchaoD/FSCalendar",
+      "state" : {
+        "revision" : "0fbdec5172fccb90f707472eeaea4ffe095278f6",
+        "version" : "2.8.4"
+      }
+>>>>>>> eb60300e3c22a387d923e93d18591a45cef334a3
     }
   ],
   "version" : 3
