@@ -116,6 +116,10 @@ struct DayButton: View {
     let onTap: () -> Void
     let namespace: Namespace.ID
     
+    private var isToday: Bool {
+        Calendar.current.isDateInToday(date)
+    }
+    
     private var dayFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "EE"
@@ -129,31 +133,39 @@ struct DayButton: View {
         return formatter
     }
     
+    
     var body: some View {
-        
-        VStack() {
+        VStack {
             Text(dayFormatter.string(from: date).uppercased())
                 .font(.caption2)
                 .fontWeight(.bold)
-                .foregroundStyle(isSelected ? .white : .secondary)
+                .foregroundStyle(isSelected ? .white : (isToday ? .islamicGreen : .secondary))
             
             Text(numberFormatter.string(from: date))
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundStyle(isSelected ? .white : .primary)
+                .foregroundStyle(isSelected ? .white : (isToday ? .islamicGreen : .secondary))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
         .background {
             if isSelected {
-                RoundedRectangle(cornerRadius: 13)
+                RoundedRectangle(cornerRadius: 15)
                     .fill(Color(red: 0/255, green: 144/255, blue: 0/255))
                     .matchedGeometryEffect(id: "selectedDay", in: namespace)
-            } else {
-                RoundedRectangle(cornerRadius: 20)
+            }
+            else if isToday {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(Color(.secondarySystemBackground))
+                    .strokeBorder(Color(red: 0/255, green: 144/255, blue: 0/255), lineWidth: 3)
+            }
+            else {
+                RoundedRectangle(cornerRadius: 18)
                     .fill(Color(.secondarySystemBackground))
             }
         }
+
+        .cornerRadius(8)
         .onTapGesture(perform: onTap)
         }
     }
