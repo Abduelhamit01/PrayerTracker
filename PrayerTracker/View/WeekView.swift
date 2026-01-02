@@ -13,6 +13,7 @@ struct WeekView: View {
     
     @State var position = ScrollPosition(id: "current")
     @State private var monatsString: String = "Dezember 2025"
+
     
     // Hilfseigenschaften für den Kalender
     private var calendar: Calendar {
@@ -150,22 +151,20 @@ struct DayButton: View {
         .padding(.vertical, 10)
         .background {
             if isSelected {
-                RoundedRectangle(cornerRadius: 15)
+                RoundedRectangle(cornerRadius: 13)
                     .fill(Color(red: 0/255, green: 144/255, blue: 0/255))
                     .matchedGeometryEffect(id: "selectedDay", in: namespace)
             }
             else if isToday {
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: 13)
                     .fill(Color(.secondarySystemBackground))
                     .strokeBorder(Color(red: 0/255, green: 144/255, blue: 0/255), lineWidth: 3)
             }
             else {
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: 13)
                     .fill(Color(.secondarySystemBackground))
             }
         }
-
-        .cornerRadius(8)
         .onTapGesture(perform: onTap)
         }
     }
