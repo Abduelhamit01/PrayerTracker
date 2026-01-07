@@ -98,9 +98,15 @@ class PrayerManager: ObservableObject {
         }
     }
     
-    // Löscht alle erledigten Gebete
+    // Löscht alle erledigten Gebete des ausgewählten Tages
     func clearAllCompletions() {
-        updateCompletedParts([])
+        let datePrefix = formatDateKey(selectedDate)
+        var parts = completedParts
+
+        // Nur Einträge des aktuellen Tages entfernen
+        parts = parts.filter { !$0.hasPrefix(datePrefix) }
+
+        updateCompletedParts(parts)
     }
     
     // Private Hilfsfunktionen für die Datenverwaltung
