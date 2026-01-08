@@ -29,13 +29,13 @@ class PrayerManager: ObservableObject {
         }
     }
     
-    // Die Liste aller Gebete
+    // Die Liste aller Gebete (islamisch korrekte Reihenfolge)
     let prayers: [Prayer] = [
         Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"], emoji: "🌅"),
-        Prayer(id: "dhuhr", name: "Dhuhr", parts: ["Sunnah", "Fardh"], emoji: "☀️"),
+        Prayer(id: "dhuhr", name: "Dhuhr", parts: ["Sunnah (vor)", "Fardh", "Sunnah (nach)"], emoji: "☀️"),
         Prayer(id: "asr", name: "Asr", parts: ["Sunnah", "Fardh"], emoji: "⛅️"),
         Prayer(id: "maghrib", name: "Maghrib", parts: ["Fardh", "Sunnah"], emoji: "🌆"),
-        Prayer(id: "isha", name: "Isha", parts: ["Fardh", "Sunnah", "Witr"], emoji: "🌙")
+        Prayer(id: "isha", name: "Isha", parts: ["Sunnah (vor)", "Fardh", "Sunnah (nach)", "Witr"], emoji: "🌙")
     ]
     
     // Getter für die erledigten Teile
