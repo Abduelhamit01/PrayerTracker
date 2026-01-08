@@ -1,5 +1,5 @@
 //
-//  SecondList.swift
+//  PrayerPartRow.swift
 //  PrayerTracker
 //
 //  Created by Abdülhamit Oral on 16.12.25.
@@ -11,22 +11,55 @@ struct PrayerPartRow: View {
     let part: String
     let isCompleted: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
-        HStack(spacing: 12) {
-            Text("📿")
-                .font(.system(size: 40))
-            VStack(alignment: .leading, spacing: 2) {
+        Button(action: onTap) {
+            HStack(spacing: 14) {
+                // Checkbox
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(isCompleted ? Color.islamicGreen : Color(.systemGray3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+
+                    if isCompleted {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.islamicGreen)
+                            .frame(width: 24, height: 24)
+
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .padding(.leading, 14)
+
+                // Part Name
                 Text(part)
                     .font(.body)
-                    .fontWeight(.medium)
+                    .foregroundColor(isCompleted ? .secondary : .primary)
+                    .strikethrough(isCompleted, color: .secondary)
+
+                Spacer()
+
+                // Pflicht Badge
+                if part == "Fardh" {
+                    Text("Pflicht")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.islamicGreen)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.islamicGreen.opacity(0.12))
+                        .cornerRadius(6)
+                        .padding(.trailing, 14)
+                } else {
+                    Spacer()
+                        .frame(width: 14)
+                }
             }
-            Spacer()
-            CheckMarkImage(isCompleted: isCompleted)
+            .padding(.vertical, 12)
         }
-        .padding(.vertical, 4)
-        .contentShape(Rectangle())
-        .onTapGesture(perform: onTap)
+        .buttonStyle(.plain)
     }
 }
 
@@ -41,7 +74,7 @@ struct PrayerPartRow: View {
 
 #Preview("Not Completed") {
     PrayerPartRow(
-        part: "Dhuhr (Mittagsgebet)",
+        part: "Fardh",
         isCompleted: false,
         onTap: { print("Tapped") }
     )

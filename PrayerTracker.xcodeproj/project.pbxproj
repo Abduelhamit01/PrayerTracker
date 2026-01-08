@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F02BA9E02F044A8E008C0870 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = F02BA9DF2F044A8E008C0870 /* FSCalendar */; };
 		F063448F2ED6586D00584F06 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F063448E2ED6586900584F06 /* .gitignore */; };
 		F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F06344A32EE4126A00584F06 /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
@@ -31,7 +30,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */,
-				F02BA9E02F044A8E008C0870 /* FSCalendar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +74,6 @@
 			name = PrayerTracker;
 			packageProductDependencies = (
 				F06344A32EE4126A00584F06 /* ConfettiSwiftUI */,
-				F02BA9DF2F044A8E008C0870 /* FSCalendar */,
 			);
 			productName = TodoApp;
 			productReference = F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */;
@@ -108,7 +105,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
-				F02BA9DE2F044A8E008C0870 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F0D242EF2ED46156003CB2D9 /* Products */;
@@ -357,14 +353,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F02BA9DE2F044A8E008C0870 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.8.4;
-			};
-		};
 		F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
@@ -376,11 +364,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F02BA9DF2F044A8E008C0870 /* FSCalendar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F02BA9DE2F044A8E008C0870 /* XCRemoteSwiftPackageReference "FSCalendar" */;
-			productName = FSCalendar;
-		};
 		F06344A32EE4126A00584F06 /* ConfettiSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;

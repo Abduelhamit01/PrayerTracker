@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import AVFoundation
 
 class PrayerManager: ObservableObject {
     @Published var selectedDate: Date = Date() {
@@ -28,13 +29,13 @@ class PrayerManager: ObservableObject {
         }
     }
     
-    // Die Liste aller Gebete
+    // Die Liste aller Gebete (islamisch korrekte Reihenfolge)
     let prayers: [Prayer] = [
         Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"], emoji: "🌅"),
-        Prayer(id: "dhuhr", name: "Dhuhr", parts: ["Sunnah", "Fardh"], emoji: "☀️"),
+        Prayer(id: "dhuhr", name: "Dhuhr", parts: ["Sunnah (vor)", "Fardh", "Sunnah (nach)"], emoji: "☀️"),
         Prayer(id: "asr", name: "Asr", parts: ["Sunnah", "Fardh"], emoji: "⛅️"),
         Prayer(id: "maghrib", name: "Maghrib", parts: ["Fardh", "Sunnah"], emoji: "🌆"),
-        Prayer(id: "isha", name: "Isha", parts: ["Fardh", "Sunnah", "Witr"], emoji: "🌙")
+        Prayer(id: "isha", name: "Isha", parts: ["Sunnah (vor)", "Fardh", "Sunnah (nach)", "Witr"], emoji: "🌙")
     ]
     
     // Getter für die erledigten Teile
@@ -98,9 +99,15 @@ class PrayerManager: ObservableObject {
         }
     }
     
-    // Löscht alle erledigten Gebete
+    // Löscht alle erledigten Gebete des ausgewählten Tages
     func clearAllCompletions() {
-        updateCompletedParts([])
+        let datePrefix = formatDateKey(selectedDate)
+        var parts = completedParts
+
+        // Nur Einträge des aktuellen Tages entfernen
+        parts = parts.filter { !$0.hasPrefix(datePrefix) }
+
+        updateCompletedParts(parts)
     }
     
     // Private Hilfsfunktionen für die Datenverwaltung
@@ -139,4 +146,7 @@ class PrayerManager: ObservableObject {
         }
     }
     
+    func playSuccessSound() {
+        AudioServicesPlaySystemSound(1407)
+    }
 }
