@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ConfettiSwiftUI
+import AVFoundation
 
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
@@ -122,6 +123,7 @@ struct ContentView: View {
 
         if !wereAllCompleted && areAllCompletedNow {
             trigger += 1
+            manager.playSuccessSound()
         }
     }
 }

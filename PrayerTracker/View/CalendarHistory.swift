@@ -196,7 +196,7 @@ struct LegendRow: View {
             Text(description)
                 .font(.caption)
                 .foregroundColor(.secondary)
-
+            
             Spacer()
         }
     }

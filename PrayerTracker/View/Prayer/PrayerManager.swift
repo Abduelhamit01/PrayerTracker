@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import AVFoundation
 
 class PrayerManager: ObservableObject {
     @Published var selectedDate: Date = Date() {
@@ -145,4 +146,7 @@ class PrayerManager: ObservableObject {
         }
     }
     
+    func playSuccessSound() {
+        AudioServicesPlaySystemSound(1407)
+    }
 }
