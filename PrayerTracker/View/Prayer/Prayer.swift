@@ -11,5 +11,5 @@ struct Prayer: Identifiable {
     let id: String
     let name: String
     let parts: [String]
-    let emoji: String
+    let icon: String  // SF Symbol Name
 }

@@ -47,25 +47,25 @@ struct PrayerCard: View {
     // MARK: - Header
 
     private var headerButton: some View {
-        Button(action: {
+        HStack(spacing: 14) {
+            iconBox
+            titleAndProgress
+            Spacer()
+            statusAndChevron
+        }
+        .padding(14)
+        .contentShape(Rectangle())
+        .onTapGesture {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                 isExpanded.toggle()
             }
-        }) {
-            HStack(spacing: 14) {
-                emojiBox
-                titleAndProgress
-                Spacer()
-                statusAndChevron
-            }
-            .padding(14)
         }
-        .buttonStyle(.plain)
     }
 
-    private var emojiBox: some View {
-        Text(prayer.emoji)
-            .font(.system(size: 26))
+    private var iconBox: some View {
+        Image(systemName: prayer.icon)
+            .font(.system(size: 22))
+            .foregroundStyle(.islamicGreen)
             .frame(width: 46, height: 46)
             .background(
                 RoundedRectangle(cornerRadius: 10)
@@ -127,7 +127,7 @@ struct PrayerCard: View {
 #Preview {
     VStack {
         PrayerCard(
-            prayer: Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"], emoji: "🌅"),
+            prayer: Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"], icon: "sunrise.fill"),
             manager: PrayerManager(),
             onPartTap: { _ in }
         )
