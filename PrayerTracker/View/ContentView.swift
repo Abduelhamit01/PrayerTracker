@@ -9,6 +9,7 @@ import SwiftUI
 import ConfettiSwiftUI
 import AVFoundation
 
+
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @State private var trigger: Int = 0
@@ -71,9 +72,7 @@ struct ContentView: View {
     // MARK: - Settings Tab
 
     private var settingsTab: some View {
-        NavigationStack {
-            Text("Here are the settings")
-        }
+        SettingsView()
         .tabItem {
             Label("Setting", systemImage: "gear")
         }
@@ -96,17 +95,13 @@ struct ContentView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu("", systemImage: "ellipsis.circle") {
                 Button {
-                    withAnimation(.snappy) {
-                        manager.completeAllPrayers()
-                    }
+                    manager.completeAllPrayers()
                 } label: {
                     Label("Complete all Prayers", systemImage: "checkmark.circle.fill")
                 }
 
                 Button(role: .destructive) {
-                    withAnimation(.snappy) {
-                        manager.clearAllCompletions()
-                    }
+                    manager.clearAllCompletions()
                 } label: {
                     Label("Clear all completions", systemImage: "trash")
                 }

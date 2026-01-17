@@ -12,8 +12,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F02BAA622F1C02B1008C0870 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = PrayerTracker.app; path = "/Users/abduelhamit/Developer/swift/PrayerTracker/build/Debug-iphoneos/PrayerTracker.app"; sourceTree = "<absolute>"; };
 		F063448E2ED6586900584F06 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrayerTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -41,16 +41,7 @@
 			children = (
 				F063448E2ED6586900584F06 /* .gitignore */,
 				F0D242F02ED46156003CB2D9 /* PrayerTracker */,
-				F0D242EF2ED46156003CB2D9 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		F0D242EF2ED46156003CB2D9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -76,7 +67,7 @@
 				F06344A32EE4126A00584F06 /* ConfettiSwiftUI */,
 			);
 			productName = TodoApp;
-			productReference = F0D242EE2ED46156003CB2D9 /* PrayerTracker.app */;
+			productReference = F02BAA622F1C02B1008C0870 /* PrayerTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -107,7 +98,7 @@
 				F06344A22EE4126A00584F06 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = F0D242EF2ED46156003CB2D9 /* Products */;
+			productRefGroup = F0D242E52ED46156003CB2D9;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -264,8 +255,9 @@
 		F0D242FA2ED46157003CB2D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PrayerTrackerIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
@@ -298,8 +290,9 @@
 		F0D242FB2ED46157003CB2D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PrayerTrackerIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
