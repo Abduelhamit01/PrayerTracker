@@ -9,14 +9,11 @@ import SwiftUI
 
 @main
 struct PrayerTrackerApp: App {
-    @AppStorage("appAppearance") private var appearance: String = "System"
+    @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
 
     private var colorScheme: ColorScheme? {
-        switch appearance {
-        case "Light": return .light
-        case "Dark": return .dark
-        default: return nil  // System
-        }
+        let appearance = AppAppearance(rawValue: appearanceRaw) ?? .system
+        return appearance.colorScheme
     }
 
     var body: some Scene {
