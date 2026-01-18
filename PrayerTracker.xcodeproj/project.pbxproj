@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F02BAAA92F1D09C7008C0870 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */; };
+		F02BAAAB2F1D0B3D008C0870 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */; };
 		F063448F2ED6586D00584F06 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F063448E2ED6586900584F06 /* .gitignore */; };
 		F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F06344A32EE4126A00584F06 /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F02BAA622F1C02B1008C0870 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = PrayerTracker.app; path = "/Users/abduelhamit/Developer/swift/PrayerTracker/build/Debug-iphoneos/PrayerTracker.app"; sourceTree = "<absolute>"; };
+		F02BAA722F1C0A70008C0870 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrayerTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		F063448E2ED6586900584F06 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -41,6 +45,9 @@
 			children = (
 				F063448E2ED6586900584F06 /* .gitignore */,
 				F0D242F02ED46156003CB2D9 /* PrayerTracker */,
+				F02BAA722F1C0A70008C0870 /* PrayerTracker.app */,
+				F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */,
+				F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,7 +74,7 @@
 				F06344A32EE4126A00584F06 /* ConfettiSwiftUI */,
 			);
 			productName = TodoApp;
-			productReference = F02BAA622F1C02B1008C0870 /* PrayerTracker.app */;
+			productReference = F02BAA722F1C0A70008C0870 /* PrayerTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -113,6 +120,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F063448F2ED6586D00584F06 /* .gitignore in Resources */,
+				F02BAAAB2F1D0B3D008C0870 /* Localizable.xcstrings in Resources */,
+				F02BAAA92F1D09C7008C0870 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,8 +277,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -303,8 +312,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

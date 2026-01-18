@@ -84,7 +84,7 @@ struct ContentView: View {
     private var homeToolbar: some ToolbarContent {
         if !Calendar.current.isDateInToday(manager.selectedDate) {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Heute") {
+                Button("today") {
                     withAnimation(.snappy) {
                         manager.selectedDate = Date()
                     }

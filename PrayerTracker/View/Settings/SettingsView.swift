@@ -8,9 +8,9 @@
 import SwiftUI
 
 enum AppAppearance: String, CaseIterable {
-    case light = "Light"
-    case dark = "Dark"
-    case system = "System"
+    case light
+    case dark
+    case system
 
     var colorScheme: ColorScheme? {
         switch self {
@@ -19,10 +19,18 @@ enum AppAppearance: String, CaseIterable {
         case .system: return nil
         }
     }
+
+    var localizedName: LocalizedStringKey {
+        switch self {
+        case .light: return "light"
+        case .dark: return "dark"
+        case .system: return "system"
+        }
+    }
 }
 
 struct SettingsView: View {
-    @State private var isPresented = false
+    @State private var showDeleteAlert = false
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
 
     private var appearance: AppAppearance {
@@ -33,7 +41,7 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 // MARK: - Appearance Section
-                Section(header: Text("Design")) {
+                Section(header: Text("design")) {
                     HStack(spacing: 12) {
                         ForEach(AppAppearance.allCases, id: \.self) { mode in
                             appearanceCard(mode)
@@ -44,13 +52,40 @@ struct SettingsView: View {
                     .listRowInsets(EdgeInsets())
                 }
 
-                Section(header: Text("Daten"), footer: Text("Das löschen der Daten kann nicht rückgängig gemacht werden")) {
-                    Text("Alle Daten löschen")
-                        .foregroundStyle(.red)
+                Section(header: Text("data"), footer: Text("delete_data_warning")) {
+                    Button("delete_all_data", role: .destructive) {
+                        showDeleteAlert = true
+                    }
+                    .foregroundStyle(.red)
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(Text("settings"))
+            .alert("warning_data_deleted", isPresented: $showDeleteAlert) {
+                Button("cancel", role: .cancel) { }
+                Button("delete", role: .destructive) {
+                    deleteAllData()
+                }
+            } message: {
+                Text("data_cannot_recover")
+            }
         }
+    }
+    
+    private func deleteAllData() {
+        // Speichere hasSeenWelcome, damit die Welcome-Seite nicht erneut angezeigt wird
+        let hasSeenWelcome = UserDefaults.standard.bool(forKey: "hasSeenWelcome")
+
+        if let bundleID = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            UserDefaults.standard.synchronize()
+        }
+
+        // Stelle hasSeenWelcome wieder her
+        UserDefaults.standard.set(hasSeenWelcome, forKey: "hasSeenWelcome")
+        appearanceRaw = AppAppearance.system.rawValue
+
+        // Benachrichtige PrayerManager, dass Daten gelöscht wurden
+        NotificationCenter.default.post(name: .didClearAllData, object: nil)
     }
 
     // MARK: - Appearance Card
@@ -74,7 +109,7 @@ struct SettingsView: View {
                             .stroke(isSelected ? accentColor : Color.clear, lineWidth: 3)
                     )
 
-                Text(mode.rawValue)
+                Text(mode.localizedName)
                     .font(.caption)
                     .fontWeight(isSelected ? .semibold : .regular)
                     .foregroundStyle(isSelected ? accentColor : .secondary)

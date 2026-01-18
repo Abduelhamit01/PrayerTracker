@@ -80,7 +80,7 @@ struct PrayerCard: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.primary)
 
-            Text("\(completedCount)/\(prayer.parts.count) erledigt")
+            Text("parts_completed \(completedCount) \(prayer.parts.count)")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }

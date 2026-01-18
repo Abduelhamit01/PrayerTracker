@@ -40,22 +40,6 @@ struct PrayerPartRow: View {
                     .strikethrough(isCompleted, color: .secondary)
 
                 Spacer()
-
-                // Pflicht Badge
-                if part == "Fardh" {
-                    Text("Pflicht")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.islamicGreen)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(Color.islamicGreen.opacity(0.12))
-                        .cornerRadius(6)
-                        .padding(.trailing, 14)
-                } else {
-                    Spacer()
-                        .frame(width: 14)
-                }
             }
             .padding(.vertical, 12)
         }

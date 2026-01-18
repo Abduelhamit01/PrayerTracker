@@ -6,6 +6,14 @@
     {
       "layers" : [
         {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "srgb:0.00000,0.56471,0.00000,1.00000"
+              }
+            }
+          ],
           "image-name" : "1024x1024.png",
           "name" : "1024x1024"
         }

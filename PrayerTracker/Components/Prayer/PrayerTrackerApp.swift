@@ -9,7 +9,6 @@ import SwiftUI
 
 @main
 struct PrayerTrackerApp: App {
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     @AppStorage("appAppearance") private var appearance: String = "System"
 
     private var colorScheme: ColorScheme? {
@@ -22,16 +21,8 @@ struct PrayerTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if hasSeenWelcome {
-                    ContentView()
-                } else {
-                    WelcomePage(onComplete: {
-                        hasSeenWelcome = true
-                    })
-                }
-            }
-            .preferredColorScheme(colorScheme)
+            SplashScreenView()
+                .preferredColorScheme(colorScheme)
         }
     }
 }

@@ -129,7 +129,7 @@ struct WelcomePage: View {
                 .foregroundStyle(.white)
 
             // Tagline
-            Text("Deine spirituelle Begleitung\nfür ein achtsames Gebetsleben")
+            Text("welcome_subtitle")
                 .font(.system(size: 15, weight: .regular))
                 .foregroundStyle(.white.opacity(0.6))
                 .multilineTextAlignment(.center)
@@ -147,7 +147,7 @@ struct WelcomePage: View {
                 onComplete()
             }
         }) {
-            Text("Beginnen")
+            Text("get_started")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(deepGreen)
                 .frame(maxWidth: .infinity)

@@ -1,6 +1,6 @@
 //
 //  PrayerManager.swift
-//  TodoApp
+//  PrayerTracker
 //
 //  Created by Abdülhamit Oral
 //
@@ -10,10 +10,16 @@ import SwiftUI
 import Combine
 import AVFoundation
 
+// Notification für das Löschen aller Daten
+extension Notification.Name {
+    static let didClearAllData = Notification.Name("didClearAllData")
+}
+
 class PrayerManager: ObservableObject {
     @Published var selectedDate: Date = Date()
 
     private let storageKey = "completedParts"
+    private var cancellables = Set<AnyCancellable>()
 
     // Gecachte Daten - wird nur einmal beim Start geladen
     private var completedParts: Set<String> {
@@ -46,6 +52,20 @@ class PrayerManager: ObservableObject {
         } else {
             self.completedParts = []
         }
+
+        // Auf Datenlöschung reagieren
+        NotificationCenter.default.publisher(for: .didClearAllData)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.clearCache()
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Leert den internen Cache (wird nach Datenlöschung aufgerufen)
+    private func clearCache() {
+        completedParts = []
+        objectWillChange.send()
     }
 
     private func saveToStorage() {

@@ -12,13 +12,13 @@ struct WeekView: View {
     @Namespace private var selectionNS
 
     @State var position = ScrollPosition(id: "current")
-    @State private var monatsString: String = "Dezember 2025"
+    @State private var monatsString: String = ""
 
 
     // Hilfseigenschaften für den Kalender
     private var calendar: Calendar {
         var cal = Calendar.current
-        cal.locale = Locale(identifier: "de_DE")
+        cal.locale = Locale.current
         return cal
     }
 
@@ -43,7 +43,7 @@ struct WeekView: View {
     func updateMonthDisplay(for weekOffset: Int) {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
-        formatter.locale = Locale(identifier: "de_DE")
+        formatter.locale = Locale.current
 
         let dates = getWeek(zahl: weekOffset)
 
@@ -198,7 +198,7 @@ struct WeekView: View {
         private var dayFormatter: DateFormatter {
             let formatter = DateFormatter()
             formatter.dateFormat = "EE"
-            formatter.locale = Locale(identifier: "de_DE")
+            formatter.locale = Locale.current
             return formatter
         }
 

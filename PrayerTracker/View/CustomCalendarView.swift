@@ -12,7 +12,13 @@ struct CustomCalendarView: View {
     @State private var currentMonthIndex: Int = 0
 
     let calendar = Calendar.current
-    private let daysOfWeek = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+    private var daysOfWeek: [String] {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        // Sonntag ist Index 0, also array beginnt mit Sonntag
+        let symbols = formatter.veryShortWeekdaySymbols ?? ["S", "M", "T", "W", "T", "F", "S"]
+        return symbols
+    }
     private let gridHeight: CGFloat = 340
 
     // Bereich: 24 Monate zurück bis 24 Monate voraus
@@ -44,8 +50,8 @@ struct CustomCalendarView: View {
 
             // Days of Week Header
             HStack {
-                ForEach(daysOfWeek, id: \.self) { day in
-                    Text(day)
+                ForEach(0..<daysOfWeek.count, id: \.self) { index in
+                    Text(daysOfWeek[index])
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
@@ -80,7 +86,7 @@ struct CustomCalendarView: View {
     private func monthYearString(for offset: Int) -> String {
         let date = getMonthDate(for: offset)
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
+        formatter.locale = Locale.current
         formatter.dateFormat = "MMMM yyyy"
         return formatter.string(from: date)
     }

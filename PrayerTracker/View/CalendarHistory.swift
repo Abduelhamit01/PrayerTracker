@@ -24,7 +24,7 @@ struct CalendarHistory: View {
                 .padding(.top)
             }
             .background(Color(.systemBackground))
-            .navigationTitle("Gebetsverlauf")
+            .navigationTitle(Text("prayer_history"))
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -42,11 +42,11 @@ struct StatisticsCard: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Statistik")
+                Text("statistics")
                     .font(.headline)
                     .foregroundColor(.primary)
                 Spacer()
-                Text("Letzte 30 Tage")
+                Text("last_30_days")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -54,21 +54,21 @@ struct StatisticsCard: View {
             HStack(spacing: 12) {
                 StatItem(
                     value: stats.complete,
-                    label: "Vollständig",
+                    label: "complete",
                     color: .green,
                     icon: "checkmark.circle.fill"
                 )
 
                 StatItem(
                     value: stats.partial,
-                    label: "Teilweise",
+                    label: "partial",
                     color: .yellow,
                     icon: "circle.lefthalf.filled"
                 )
 
                 StatItem(
                     value: stats.missed,
-                    label: "Verpasst",
+                    label: "missed",
                     color: .red,
                     icon: "xmark.circle.fill"
                 )
@@ -151,7 +151,7 @@ struct StatisticsCard: View {
 
 struct StatItem: View {
     let value: Int
-    let label: String
+    let label: LocalizedStringKey
     let color: Color
     let icon: String
 
