@@ -8,12 +8,13 @@
 import SwiftUI
 import ConfettiSwiftUI
 import AVFoundation
+import UserNotifications
 
 
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @State private var trigger: Int = 0
-
+    
     var body: some View {
         TabView {
             homeTab
@@ -30,6 +31,7 @@ struct ContentView: View {
             repetitionInterval: ConfettiConfiguration.repetitionInterval
         )
     }
+    
 
     // MARK: - Home Tab
 

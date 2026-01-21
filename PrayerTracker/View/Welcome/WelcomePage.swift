@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct WelcomePage: View {
     let onComplete: () -> Void
@@ -143,6 +144,13 @@ struct WelcomePage: View {
 
     private var startButton: some View {
         Button(action: {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                if success {
+                    scheduleDailyNotification()
+                } else if let error {
+                    print(error.localizedDescription)
+                }
+            }
             withAnimation(.easeOut(duration: 0.25)) {
                 onComplete()
             }
@@ -160,6 +168,22 @@ struct WelcomePage: View {
         }
         .opacity(buttonOpacity)
     }
+    
+    func scheduleDailyNotification() {
+          let content = UNMutableNotificationContent()
+          content.title = "Prayer Tracker"
+          content.subtitle = "notification_reminder"
+          content.sound = .default
+
+          var dateComponents = DateComponents()
+          dateComponents.hour = 20
+
+          let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+          let request = UNNotificationRequest(identifier: "dailyPrayerReminder", content: content, trigger: trigger)
+
+          UNUserNotificationCenter.current().add(request)
+      }
+    
 
     // MARK: - Animations
 
