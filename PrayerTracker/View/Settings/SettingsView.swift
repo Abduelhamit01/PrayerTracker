@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 enum AppAppearance: String, CaseIterable {
     case light
@@ -53,10 +54,27 @@ struct SettingsView: View {
                 }
 
                 Section(header: Text("data"), footer: Text("delete_data_warning")) {
-                    Button("delete_all_data", role: .destructive) {
+                    Button(role: .destructive) {
                         showDeleteAlert = true
+                    } label: {
+                        Label("delete_all_data", systemImage: "trash")
                     }
-                    .foregroundStyle(.red)
+                }
+                
+                Section(header: Text("language")) {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Label("language", systemImage: "globe")
+                            Spacer()
+                            Image(systemName: "arrow.up.forward")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(.primary)
                 }
             }
             .navigationTitle(Text("settings"))
