@@ -172,7 +172,7 @@ struct WelcomePage: View {
     func scheduleDailyNotification() {
           let content = UNMutableNotificationContent()
           content.title = "Prayer Tracker"
-          content.subtitle = "notification_reminder"
+        content.subtitle = String(localized: "notification_reminder")
           content.sound = .default
 
           var dateComponents = DateComponents()

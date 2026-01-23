@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 enum AppAppearance: String, CaseIterable {
     case light
@@ -32,6 +33,7 @@ enum AppAppearance: String, CaseIterable {
 struct SettingsView: View {
     @State private var showDeleteAlert = false
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
+    @Environment(\.openURL) private var openUrl
 
     private var appearance: AppAppearance {
         get { AppAppearance(rawValue: appearanceRaw) ?? .system }
@@ -53,10 +55,39 @@ struct SettingsView: View {
                 }
 
                 Section(header: Text("data"), footer: Text("delete_data_warning")) {
-                    Button("delete_all_data", role: .destructive) {
+                    Button(role: .destructive) {
                         showDeleteAlert = true
+                    } label: {
+                        Label("delete_all_data", systemImage: "trash")
                     }
-                    .foregroundStyle(.red)
+                }
+                
+                Section(header: Text("language")) {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Label("language", systemImage: "globe")
+                            Spacer()
+                            Image(systemName: "arrow.up.forward")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(.primary)
+                }
+                
+                Section {
+                    Button("Rate the App", systemImage: "star.fill") {
+                        openUrl(URL(string: "https://apps.apple.com/us/app/prayer-tracker-track-prayers/id6758096588")!)
+                    }
+                    .tint(.primary)
+                    
+                    Button("Contact Support", systemImage: "envelope") {
+                        sendEmail()
+                    }
+                    .tint(.primary)
                 }
             }
             .navigationTitle(Text("settings"))
@@ -67,6 +98,36 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("data_cannot_recover")
+            }
+        }
+    }
+    
+    private func rateTheApp() {
+
+        
+    }
+    
+    private func sendEmail() {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = "abduelhamit.o@protonmail.com"
+        
+        let subject = "Feedback"
+        let body = "Assalamu Aleykum Abdülhamit,"
+        
+        components.queryItems = [
+            URLQueryItem(name: "subject", value: subject),
+            URLQueryItem(name: "body",    value: body)
+        ]
+        
+        guard let url = components.url else {
+            print("Ungültige mailto-URL")
+            return
+        }
+        
+        openUrl(url) { accepted in
+            if !accepted {
+                print("Mail öffnen fehlgeschlagen")
             }
         }
     }
