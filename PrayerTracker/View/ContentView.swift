@@ -18,6 +18,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             homeTab
+            ramadanTab
             historyTab
             settingsTab
         }
@@ -68,6 +69,15 @@ struct ContentView: View {
         CalendarHistory(manager: manager)
             .tabItem {
                 Label("History", systemImage: "calendar")
+            }
+    }
+
+    //MARK: - Ramadan Tab
+
+    private var ramadanTab: some View {
+        RamadanView(manager: manager)
+            .tabItem {
+                Label("Ramadan", systemImage: "moon")
             }
     }
 
