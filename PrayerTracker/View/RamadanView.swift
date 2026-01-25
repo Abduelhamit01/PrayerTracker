@@ -38,8 +38,8 @@ struct RamadanView: View {
             // Helles Grün
             return LinearGradient(
                 colors: [
-                    Color(red: 0.88, green: 0.95, blue: 0.90),
-                    Color(red: 0.78, green: 0.90, blue: 0.82)
+                    Color(red: 0.50, green: 0.75, blue: 0.60),
+                    Color(red: 0.78, green: 0.90, blue: 0.72)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -56,20 +56,20 @@ struct RamadanView: View {
     }
 
     private var sliderTrackColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.15) : islamicGreen.opacity(0.15)
+        colorScheme == .dark ? Color.white.opacity(0.15) : islamicGreen.opacity(0.2)
     }
 
     private var sliderTextColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.5) : islamicGreen.opacity(0.6)
+        colorScheme == .dark ? Color.white.opacity(0.5) : islamicGreen.opacity(0.8)
     }
 
     // Mond-Farben - Gold/Amber für Kontrast gegen Grün
     private var moonColor: Color {
-        Color(red: 1.0, green: 0.85, blue: 0.4) // Warmes Gold
+        Color(red: 1.0, green: 0.95, blue: 0.4) // Warmes Gold
     }
 
     private var starColor: Color {
-        Color(red: 1.0, green: 0.78, blue: 0.3) // Amber
+        Color(red: 1.0, green: 0.95, blue: 0.3) // Amber
     }
 
     var body: some View {
@@ -78,11 +78,8 @@ struct RamadanView: View {
             backgroundGradient
                 .ignoresSafeArea()
 
-            // Hauptinhalt
             VStack(spacing: 0) {
-                // Top Bar mit Zurück Button
                 HStack {
-                    // Zurück Button (Liquid Glass Style)
                     backButton
                     Spacer()
                 }
@@ -113,27 +110,7 @@ struct RamadanView: View {
                         ramadanStart: ramadanManager.ramadanStart
                     )
                     .padding(.vertical, 10)
-                } else {
-                    // Fallback für "Noch X Tage", falls Ramadan noch nicht begonnen hat
-                    VStack(spacing: 8) {
-                        let daysUntil = Calendar.current.dateComponents([.day], from: Date(), to: ramadanManager.ramadanStart).day ?? 0
-                        Text("Noch \(daysUntil) Tage")
-                            .font(.headline)
-                            .foregroundColor(secondaryTextColor)
-                        
-                        // Kleine Vorschau der Mondphasen als Deko
-                        HStack(spacing: 15) {
-                            Image(systemName: "moonphase.waxing.crescent")
-                            Image(systemName: "moonphase.first.quarter")
-                            Image(systemName: "moonphase.full.moon")
-                            Image(systemName: "moonphase.last.quarter")
-                        }
-                        .font(.title2)
-                        .foregroundStyle(secondaryTextColor.opacity(0.5))
-                    }
-                    .padding(.vertical, 20)
                 }
-                // --------------------------
 
                 Spacer()
 
@@ -217,7 +194,6 @@ struct RamadanView: View {
     }
 
     // MARK: - Slider Section
-
     private var sliderSection: some View {
         VStack(spacing: 16) {
             if ramadanManager.todayCompleted {
@@ -225,7 +201,8 @@ struct RamadanView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 50))
-                        .foregroundColor(islamicGreen)
+                        .foregroundStyle(islamicGreen.gradient)
+                        .shadow(color: islamicGreen.opacity(0.3), radius: 10)
 
                     Text("Alhamdulillah!")
                         .font(.title2)
@@ -265,12 +242,13 @@ struct RamadanView: View {
 
                     // Knob mit Checkmark
                     Circle()
-                        .fill(islamicGreen)
+                        .fill(.white)
                         .frame(width: knobSize, height: knobSize)
                         .overlay(
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.white)
-                                .font(.system(size: 20, weight: .bold))
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 50))
+                                .foregroundStyle(islamicGreen.gradient)
+                                .shadow(color: islamicGreen.opacity(0.3), radius: 10)
                         )
                         .offset(x: dragOffset + 5)
                         .gesture(

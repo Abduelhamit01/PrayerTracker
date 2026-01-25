@@ -33,7 +33,6 @@ enum AppAppearance: String, CaseIterable {
 struct SettingsView: View {
     @State private var showDeleteAlert = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
-    
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
     @Environment(\.openURL) private var openUrl
 
@@ -115,12 +114,8 @@ struct SettingsView: View {
             } message: {
                 Text("data_cannot_recover")
             }
+            .preferredColorScheme(appearance.colorScheme)
         }
-    }
-    
-    private func rateTheApp() {
-
-        
     }
     
     private func sendEmail() {
