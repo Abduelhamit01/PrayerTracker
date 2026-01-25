@@ -32,6 +32,8 @@ enum AppAppearance: String, CaseIterable {
 
 struct SettingsView: View {
     @State private var showDeleteAlert = false
+    @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
+    
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
     @Environment(\.openURL) private var openUrl
 
@@ -53,16 +55,8 @@ struct SettingsView: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 }
-
-                Section(header: Text("data"), footer: Text("delete_data_warning")) {
-                    Button(role: .destructive) {
-                        showDeleteAlert = true
-                    } label: {
-                        Label("delete_all_data", systemImage: "trash")
-                    }
-                }
                 
-                Section(header: Text("language")) {
+                Section() {
                     Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(url)
@@ -76,6 +70,28 @@ struct SettingsView: View {
                         }
                     }
                     .tint(.primary)
+                }
+                
+                Section() {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Toggle("Ramadan", systemImage: "moon.fill", isOn: $ramadanMode)
+                                .toggleStyle(SwitchToggleStyle(tint: .islamicGreen))
+                        }
+                    }
+                    .tint(.primary)
+                }
+                
+                Section(footer: Text("delete_data_warning")) {
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                    } label: {
+                        Label("delete_all_data", systemImage: "trash")
+                    }
                 }
                 
                 Section {

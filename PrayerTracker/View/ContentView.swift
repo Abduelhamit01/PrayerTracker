@@ -13,14 +13,22 @@ import UserNotifications
 
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
+    @StateObject private var ramadanManager = RamadanManager()
     @State private var trigger: Int = 0
-    
+    @State private var selectedTab: Int = 0
+    @State private var showSettings: Bool = false
+    @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             homeTab
-            ramadanTab
+                .tag(0)
             historyTab
-            settingsTab
+                .tag(1)
+            if ramadanMode {
+                ramadanTab
+                .tag(2)
+            }
         }
         .navigationBarBackButtonHidden(true)
         .confettiCannon(
@@ -57,10 +65,40 @@ struct ContentView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Prayer Tracker")
             .toolbar { homeToolbar }
+            .fullScreenCover(isPresented: $showSettings) {
+                NavigationStack {
+                    SettingsView()
+                        .navigationTitle("Settings")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button {
+                                    showSettings = false
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundStyle(.primary)
+                                        .padding(8)
+                                        .background(.thinMaterial)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        }
+                }
+            }
         }
         .tabItem {
             Label("Home", systemImage: "house")
         }
+    }
+
+    // MARK: - Ramadan Tab
+
+    private var ramadanTab: some View {
+        RamadanView(manager: manager, ramadanManager: ramadanManager, selectedTab: $selectedTab)
+            .tabItem {
+                Label("Ramadan", systemImage: "moon.stars.fill")
+            }
     }
 
     // MARK: - History Tab
@@ -70,24 +108,6 @@ struct ContentView: View {
             .tabItem {
                 Label("History", systemImage: "calendar")
             }
-    }
-
-    //MARK: - Ramadan Tab
-
-    private var ramadanTab: some View {
-        RamadanView(manager: manager)
-            .tabItem {
-                Label("Ramadan", systemImage: "moon")
-            }
-    }
-
-    // MARK: - Settings Tab
-
-    private var settingsTab: some View {
-        SettingsView()
-        .tabItem {
-            Label("Setting", systemImage: "gear")
-        }
     }
 
     // MARK: - Toolbar
@@ -102,6 +122,16 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+        
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button {
+                showSettings = true
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .symbolRenderingMode(.hierarchical)
+            }
+            .buttonStyle(.plain)
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
