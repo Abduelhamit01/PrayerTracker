@@ -10,6 +10,7 @@ import SwiftUI
 struct PrayerCard: View {
     let prayer: Prayer
     @ObservedObject var manager: PrayerManager
+    @ObservedObject var prayerTimeManager: PrayerTimeManager
     let onPartTap: (String) -> Void
 
     @State private var isExpanded = false
@@ -86,8 +87,19 @@ struct PrayerCard: View {
         }
     }
 
+    private var prayerTime: String? {
+        prayerTimeManager.time(for: prayer.id)
+    }
+
     private var statusAndChevron: some View {
         HStack(spacing: 10) {
+            // Gebetszeit anzeigen
+            if let time = prayerTime {
+                Text(time)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundColor(.secondary)
+            }
+
             if isAllCompleted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title2)
@@ -129,6 +141,7 @@ struct PrayerCard: View {
         PrayerCard(
             prayer: Prayer(id: "fajr", name: "Fajr", parts: ["Sunnah", "Fardh"], icon: "sunrise.fill"),
             manager: PrayerManager(),
+            prayerTimeManager: PrayerTimeManager(),
             onPartTap: { _ in }
         )
     }

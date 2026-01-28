@@ -31,7 +31,9 @@ enum AppAppearance: String, CaseIterable {
 }
 
 struct SettingsView: View {
+    @ObservedObject var prayerTimeManager: PrayerTimeManager
     @State private var showDeleteAlert = false
+    @State private var showLocationPicker = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
     @Environment(\.openURL) private var openUrl
@@ -54,7 +56,30 @@ struct SettingsView: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 }
-                
+
+                // MARK: - Location Section
+                Section(header: Text("location")) {
+                    Button {
+                        showLocationPicker = true
+                    } label: {
+                        HStack {
+                            Label("prayer_location", systemImage: "location.fill")
+                            Spacer()
+                            if let city = prayerTimeManager.selectedCity {
+                                Text(city.name)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("select")
+                                    .foregroundStyle(.secondary)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(.primary)
+                }
+
                 Section() {
                     Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -115,6 +140,9 @@ struct SettingsView: View {
                 Text("data_cannot_recover")
             }
             .preferredColorScheme(appearance.colorScheme)
+            .sheet(isPresented: $showLocationPicker) {
+                LocationPickerView(prayerTimeManager: prayerTimeManager)
+            }
         }
     }
     
@@ -260,5 +288,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(prayerTimeManager: PrayerTimeManager())
 }

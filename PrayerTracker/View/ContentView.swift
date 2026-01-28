@@ -14,6 +14,7 @@ import UserNotifications
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @StateObject private var ramadanManager = RamadanManager()
+    @StateObject private var prayerTimeManager = PrayerTimeManager()
     @State private var trigger: Int = 0
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
@@ -55,6 +56,7 @@ struct ContentView: View {
                         PrayerCard(
                             prayer: prayer,
                             manager: manager,
+                            prayerTimeManager: prayerTimeManager,
                             onPartTap: { part in handlePartTap(prayer: prayer, part: part) }
                         )
                     }
@@ -67,7 +69,7 @@ struct ContentView: View {
             .toolbar { homeToolbar }
             .fullScreenCover(isPresented: $showSettings) {
                 NavigationStack {
-                    SettingsView()
+                    SettingsView(prayerTimeManager: prayerTimeManager)
                         .navigationTitle("Settings")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
@@ -85,6 +87,9 @@ struct ContentView: View {
                             }
                         }
                 }
+            }
+            .task {
+                await prayerTimeManager.fetchTodaysTimes()
             }
         }
         .tabItem {

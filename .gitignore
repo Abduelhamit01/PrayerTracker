@@ -65,3 +65,6 @@ iOSInjectionProject/
 
 # macOS
 .DS_Store
+
+# Secrets (API Credentials - NICHT einchecken!)
+**/Secrets.swift
