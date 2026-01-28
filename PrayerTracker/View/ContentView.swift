@@ -10,6 +10,24 @@ import ConfettiSwiftUI
 import AVFoundation
 import UserNotifications
 
+// MARK: - Liquid Glass Modifier
+
+extension View {
+    @ViewBuilder
+    func liquidGlass() -> some View {
+        if #available(iOS 26.0, *) {
+            self.glassEffect(.regular, in: .capsule)
+        } else {
+            self
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(.primary.opacity(0.15), lineWidth: 1)
+                )
+        }
+    }
+}
 
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
@@ -18,6 +36,7 @@ struct ContentView: View {
     @State private var trigger: Int = 0
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
+    @State private var showLocationPicker: Bool = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
     var body: some View {
@@ -41,7 +60,7 @@ struct ContentView: View {
             repetitionInterval: ConfettiConfiguration.repetitionInterval
         )
     }
-    
+
 
     // MARK: - Home Tab
 
@@ -91,6 +110,10 @@ struct ContentView: View {
             .task {
                 await prayerTimeManager.fetchTodaysTimes()
             }
+            .sheet(isPresented: $showLocationPicker) {
+                LocationPickerView(prayerTimeManager: prayerTimeManager)
+                    .presentationDetents([.medium, .large])
+            }
         }
         .tabItem {
             Label("Home", systemImage: "house")
@@ -128,13 +151,28 @@ struct ContentView: View {
                 }
             }
         }
-        
+
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
                 showSettings = true
             } label: {
                 Image(systemName: "gearshape.fill")
                     .symbolRenderingMode(.hierarchical)
+            }
+            .buttonStyle(.plain)
+        }
+
+        ToolbarItem(placement: .principal) {
+            Button {
+                showLocationPicker = true
+            } label: {
+                Text(prayerTimeManager.selectedCity?.name.uppercased() ?? "STANDORT")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(.primary.opacity(0.85))
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 8)
+                    .liquidGlass()
             }
             .buttonStyle(.plain)
         }
