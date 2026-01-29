@@ -70,7 +70,7 @@ struct SettingsView: View {
                             Label("prayer_location", systemImage: "location.fill")
                             Spacer()
                             if let city = prayerTimeManager.selectedCity {
-                                Text(city.name)
+                                Text(city.displayName)
                                     .foregroundStyle(.secondary)
                             } else {
                                 Text("select")

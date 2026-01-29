@@ -21,6 +21,14 @@ struct Country: Codable, Identifiable, Hashable {
         self.name = name
         self.code = code
     }
+
+    /// Gibt den Namen in der passenden Sprache zurück (Türkisch = name, sonst = code)
+    var displayName: String {
+        if Locale.isTurkish {
+            return name.capitalized
+        }
+        return (code ?? name).capitalized
+    }
 }
 
 // MARK: - State (Bundesland)
@@ -55,6 +63,14 @@ struct DiyanetState: Codable, Identifiable, Hashable {
         self.countryID = countryID
         self.code = code
     }
+
+    /// Gibt den Namen in der passenden Sprache zurück (Türkisch = name, sonst = code)
+    var displayName: String {
+        if Locale.isTurkish {
+            return name.capitalized
+        }
+        return (code ?? name).capitalized
+    }
 }
 
 // MARK: - City
@@ -88,6 +104,23 @@ struct City: Codable, Identifiable, Hashable {
         self.name = name
         self.stateID = stateID
         self.code = code
+    }
+
+    /// Gibt den Namen in der passenden Sprache zurück (Türkisch = name, sonst = code)
+    var displayName: String {
+        if Locale.isTurkish {
+            return name.capitalized
+        }
+        return (code ?? name).capitalized
+    }
+}
+
+// MARK: - Locale Helper
+
+extension Locale {
+    /// Prüft ob die aktuelle Sprache Türkisch ist
+    static var isTurkish: Bool {
+        Locale.current.language.languageCode?.identifier == "tr"
     }
 }
 

@@ -37,6 +37,7 @@ struct ContentView: View {
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
     @State private var showWhatsNew: Bool = false
+    @State private var showOnboarding: Bool = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
     var body: some View {
@@ -62,8 +63,14 @@ struct ContentView: View {
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView()
         }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(prayerTimeManager: prayerTimeManager)
+        }
         .onAppear {
-            if WhatsNewManager.shouldShowWhatsNew {
+            // Onboarding hat Priorität
+            if OnboardingManager.shouldShowOnboarding {
+                showOnboarding = true
+            } else if WhatsNewManager.shouldShowWhatsNew {
                 showWhatsNew = true
                 WhatsNewManager.markAsSeen()
             }
@@ -171,7 +178,7 @@ struct ContentView: View {
             Button {
                 showSettings = true
             } label: {
-                Text(prayerTimeManager.selectedCity?.name.uppercased() ?? "STANDORT")
+                Text(prayerTimeManager.selectedCity?.displayName.uppercased() ?? String(localized: "location_placeholder"))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .tracking(1.5)
                     .foregroundStyle(.primary.opacity(0.85))

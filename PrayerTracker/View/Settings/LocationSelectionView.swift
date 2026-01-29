@@ -21,7 +21,7 @@ struct LocationSelectionView: View {
             return prayerTimeManager.countries
         }
         return prayerTimeManager.countries.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+            $0.displayName.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -47,7 +47,7 @@ struct LocationSelectionView: View {
                             )
                         } label: {
                             HStack {
-                                Text(country.name)
+                                Text(country.displayName)
                                 Spacer()
                                 if prayerTimeManager.selectedCountry?.id == country.id {
                                     Image(systemName: "checkmark")
@@ -95,7 +95,7 @@ struct StateSelectionView: View {
             return states
         }
         return states.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+            $0.displayName.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -125,7 +125,7 @@ struct StateSelectionView: View {
                             )
                         } label: {
                             HStack {
-                                Text(state.name)
+                                Text(state.displayName)
                                 Spacer()
                                 if prayerTimeManager.selectedState?.id == state.id {
                                     Image(systemName: "checkmark")
@@ -146,7 +146,7 @@ struct StateSelectionView: View {
             }
         }
         .searchable(text: $searchText, prompt: "search")
-        .navigationTitle(country.name)
+        .navigationTitle(country.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await loadStates()
@@ -158,7 +158,7 @@ struct StateSelectionView: View {
         do {
             let fetchedStates = try await DiyanetAPI.shared.getStates(countryID: country.id)
             await MainActor.run {
-                self.states = fetchedStates.sorted { $0.name < $1.name }
+                self.states = fetchedStates.sorted { $0.displayName < $1.displayName }
                 self.isLoading = false
             }
         } catch {
@@ -187,7 +187,7 @@ struct CitySelectionView: View {
             return cities
         }
         return cities.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+            $0.displayName.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -213,7 +213,7 @@ struct CitySelectionView: View {
                             selectCity(city)
                         } label: {
                             HStack {
-                                Text(city.name)
+                                Text(city.displayName)
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if prayerTimeManager.selectedCity?.id == city.id {
@@ -235,7 +235,7 @@ struct CitySelectionView: View {
             }
         }
         .searchable(text: $searchText, prompt: "search")
-        .navigationTitle(state.name)
+        .navigationTitle(state.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await loadCities()
@@ -247,7 +247,7 @@ struct CitySelectionView: View {
         do {
             let fetchedCities = try await DiyanetAPI.shared.getCities(stateID: state.id)
             await MainActor.run {
-                self.cities = fetchedCities.sorted { $0.name < $1.name }
+                self.cities = fetchedCities.sorted { $0.displayName < $1.displayName }
                 self.isLoading = false
             }
         } catch {

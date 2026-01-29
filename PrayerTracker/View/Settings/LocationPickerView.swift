@@ -27,7 +27,7 @@ struct LocationPickerView: View {
                                 }
                             } label: {
                                 HStack {
-                                    Text(country.name)
+                                    Text(country.displayName)
                                         .foregroundStyle(.primary)
                                     Spacer()
                                     if prayerTimeManager.selectedCountry?.id == country.id {
@@ -50,7 +50,7 @@ struct LocationPickerView: View {
                                 }
                             } label: {
                                 HStack {
-                                    Text(state.name)
+                                    Text(state.displayName)
                                         .foregroundStyle(.primary)
                                     Spacer()
                                     if prayerTimeManager.selectedState?.id == state.id {
@@ -72,7 +72,7 @@ struct LocationPickerView: View {
                                 dismiss()
                             } label: {
                                 HStack {
-                                    Text(city.name)
+                                    Text(city.displayName)
                                         .foregroundStyle(.primary)
                                     Spacer()
                                     if prayerTimeManager.selectedCity?.id == city.id {

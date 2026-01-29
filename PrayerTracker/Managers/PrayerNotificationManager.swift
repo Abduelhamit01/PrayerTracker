@@ -86,7 +86,7 @@ class PrayerNotificationManager: ObservableObject {
 
         let content = UNMutableNotificationContent()
         content.title = String(localized: "prayer_time_notification_title")
-        content.body = String(localized: "prayer_time_notification_body \(prayerName) \(cityName)", comment: "Prayer notification body")
+        content.body = String(localized: "\(prayerName)", comment: "Prayer notification body")
         content.sound = .default
         content.categoryIdentifier = "PRAYER_TIME"
 
