@@ -36,7 +36,6 @@ struct ContentView: View {
     @State private var trigger: Int = 0
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
-    @State private var showLocationPicker: Bool = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
     var body: some View {
@@ -67,9 +66,10 @@ struct ContentView: View {
     private var homeTab: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 12) {
+                VStack(spacing: 8) {
                     WeekView(manager: manager)
-                        .padding(.top)
+                    Spacer()
+                    NextPrayerCountdownView()
 
                     ForEach(manager.prayers) { prayer in
                         PrayerCard(
@@ -84,7 +84,6 @@ struct ContentView: View {
                 .padding(.bottom, 20)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Prayer Tracker")
             .toolbar { homeToolbar }
             .fullScreenCover(isPresented: $showSettings) {
                 NavigationStack {
@@ -109,10 +108,6 @@ struct ContentView: View {
             }
             .task {
                 await prayerTimeManager.fetchTodaysTimes()
-            }
-            .sheet(isPresented: $showLocationPicker) {
-                LocationPickerView(prayerTimeManager: prayerTimeManager)
-                    .presentationDetents([.medium, .large])
             }
         }
         .tabItem {
@@ -164,7 +159,7 @@ struct ContentView: View {
 
         ToolbarItem(placement: .principal) {
             Button {
-                showLocationPicker = true
+                showSettings = true
             } label: {
                 Text(prayerTimeManager.selectedCity?.name.uppercased() ?? "STANDORT")
                     .font(.system(size: 13, weight: .semibold, design: .rounded))

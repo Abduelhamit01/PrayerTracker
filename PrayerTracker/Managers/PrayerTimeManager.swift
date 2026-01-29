@@ -22,7 +22,10 @@ class PrayerTimeManager: ObservableObject {
     @Published var cities: [City] = []
     @Published var isLoading = false
     @Published var error: String?
-    @Published var usePlaceholder = true // Nutzt Platzhalter wenn true
+    @Published var usePlaceholder = false // Nutzt Platzhalter wenn true
+
+    // MARK: - Notification
+    @Published var notificationsEnabled: Bool = UserDefaults.standard.bool(forKey: "notificationsEnabled")
 
     // MARK: - Storage Keys
     private let cityIDKey = "selectedCityID"
@@ -33,6 +36,7 @@ class PrayerTimeManager: ObservableObject {
     private let countryNameKey = "selectedCountryName"
     private let cachedTimesKey = "cachedPrayerTimes"
     private let cachedDateKey = "cachedPrayerTimesDate"
+    private let cachedCityIDKey = "cachedPrayerTimesCityID"
 
     // MARK: - DateFormatter
     private let dateFormatter: DateFormatter = {
@@ -68,7 +72,7 @@ class PrayerTimeManager: ObservableObject {
         }
 
         // Prüfe ob gecachte Zeiten noch aktuell sind
-        if let cached = todaysTimes, isCacheValid() {
+        if todaysTimes != nil, isCacheValid() {
             return // Cache ist noch aktuell
         }
 
@@ -84,6 +88,8 @@ class PrayerTimeManager: ObservableObject {
                 self.isLoading = false
                 self.cacheTimes(times)
             }
+            // Benachrichtigungen aktualisieren wenn aktiviert
+            await scheduleNotificationsIfEnabled(times: times)
         } catch {
             await MainActor.run {
                 self.error = error.localizedDescription
@@ -129,6 +135,7 @@ class PrayerTimeManager: ObservableObject {
 
     /// Lädt Bundesländer für ein Land
     func fetchStates(for country: Country) async {
+
         await MainActor.run {
             self.selectedCountry = country
             self.states = []
@@ -138,18 +145,6 @@ class PrayerTimeManager: ObservableObject {
         }
 
         guard DiyanetAPI.shared.hasCredentials else {
-            await MainActor.run {
-                // Demo-Daten für Entwicklung
-                if country.id == 2 { // Deutschland
-                    self.states = [
-                        DiyanetState(id: 1, name: "Nordrhein-Westfalen", countryID: 2),
-                        DiyanetState(id: 2, name: "Bayern", countryID: 2),
-                        DiyanetState(id: 3, name: "Baden-Württemberg", countryID: 2),
-                        DiyanetState(id: 4, name: "Berlin", countryID: 2),
-                        DiyanetState(id: 5, name: "Hamburg", countryID: 2)
-                    ]
-                }
-            }
             return
         }
 
@@ -173,6 +168,7 @@ class PrayerTimeManager: ObservableObject {
 
     /// Lädt Städte für ein Bundesland
     func fetchCities(for state: DiyanetState) async {
+
         await MainActor.run {
             self.selectedState = state
             self.cities = []
@@ -180,18 +176,6 @@ class PrayerTimeManager: ObservableObject {
         }
 
         guard DiyanetAPI.shared.hasCredentials else {
-            await MainActor.run {
-                // Demo-Daten für Entwicklung
-                if state.id == 1 { // NRW
-                    self.cities = [
-                        City(id: 9179, name: "Köln", stateID: 1),
-                        City(id: 9180, name: "Düsseldorf", stateID: 1),
-                        City(id: 9181, name: "Dortmund", stateID: 1),
-                        City(id: 9182, name: "Essen", stateID: 1),
-                        City(id: 9183, name: "Duisburg", stateID: 1)
-                    ]
-                }
-            }
             return
         }
 
@@ -216,6 +200,7 @@ class PrayerTimeManager: ObservableObject {
     /// Setzt den ausgewählten Standort
     func setLocation(city: City) {
         selectedCity = city
+        todaysTimes = nil
         saveLocation()
         Task {
             await fetchTodaysTimes()
@@ -258,13 +243,19 @@ class PrayerTimeManager: ObservableObject {
         if let city = selectedCity {
             defaults.set(city.id, forKey: cityIDKey)
             defaults.set(city.name, forKey: cityNameKey)
-            defaults.set(city.stateID, forKey: stateIDKey)
+            // stateID von selectedState nehmen, da API es nicht liefert
+            if let state = selectedState {
+                defaults.set(state.id, forKey: stateIDKey)
+            }
         }
 
         if let state = selectedState {
             defaults.set(state.id, forKey: stateIDKey)
             defaults.set(state.name, forKey: stateNameKey)
-            defaults.set(state.countryID, forKey: countryIDKey)
+            // countryID von selectedCountry nehmen, da API es nicht liefert
+            if let country = selectedCountry {
+                defaults.set(country.id, forKey: countryIDKey)
+            }
         }
 
         if let country = selectedCountry {
@@ -298,14 +289,29 @@ class PrayerTimeManager: ObservableObject {
         if let data = try? JSONEncoder().encode(times) {
             defaults.set(data, forKey: cachedTimesKey)
             defaults.set(dateFormatter.string(from: Date()), forKey: cachedDateKey)
+            if let cityID = selectedCity?.id {
+                defaults.set(cityID, forKey: cachedCityIDKey)
+            }
         }
     }
 
-    /// Prüft ob der Cache noch gültig ist (heute)
+    /// Prüft ob der Cache noch gültig ist (heute) und für die aktuelle Stadt
     private func isCacheValid() -> Bool {
-        guard let cachedDate = UserDefaults.standard.string(forKey: cachedDateKey) else {
+        let defaults = UserDefaults.standard
+        guard let cachedDate = defaults.string(forKey: cachedDateKey),
+              let selectedCityID = selectedCity?.id,
+              let cachedCityID = defaults.object(forKey: cachedCityIDKey) as? Int else {
             return false
         }
-        return cachedDate == dateFormatter.string(from: Date())
+        return cachedDate == dateFormatter.string(from: Date()) && cachedCityID == selectedCityID
+    }
+
+    /// Plant Benachrichtigungen wenn sie aktiviert sind
+    private func scheduleNotificationsIfEnabled(times: PrayerTimes) async {
+        let enabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
+        guard enabled, let cityName = selectedCity?.name else { return }
+
+        await PrayerNotificationManager.shared.scheduleNotifications(for: times, cityName: cityName)
     }
 }
+

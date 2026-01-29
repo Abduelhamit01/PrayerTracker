@@ -32,9 +32,11 @@ enum AppAppearance: String, CaseIterable {
 
 struct SettingsView: View {
     @ObservedObject var prayerTimeManager: PrayerTimeManager
+    @StateObject private var notificationManager = PrayerNotificationManager.shared
     @State private var showDeleteAlert = false
-    @State private var showLocationPicker = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = false
+    @Environment(\.dismiss) private var dismiss
     @AppStorage("appAppearance") private var appearanceRaw: String = AppAppearance.system.rawValue
     @Environment(\.openURL) private var openUrl
 
@@ -59,8 +61,10 @@ struct SettingsView: View {
 
                 // MARK: - Location Section
                 Section(header: Text("location")) {
-                    Button {
-                        showLocationPicker = true
+                    NavigationLink {
+                        LocationSelectionView(prayerTimeManager: prayerTimeManager) {
+                            dismiss()
+                        }
                     } label: {
                         HStack {
                             Label("prayer_location", systemImage: "location.fill")
@@ -72,12 +76,22 @@ struct SettingsView: View {
                                 Text("select")
                                     .foregroundStyle(.secondary)
                             }
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(.secondary)
                         }
                     }
                     .tint(.primary)
+                }
+
+                // MARK: - Notifications Section
+                Section(header: Text("notifications"), footer: Text("notifications_description")) {
+                    Toggle(isOn: $notificationsEnabled) {
+                        Label("notifications_enabled", systemImage: "bell.fill")
+                    }
+                    .toggleStyle(SwitchToggleStyle(tint: .islamicGreen))
+                    .onChange(of: notificationsEnabled) { _, newValue in
+                        Task {
+                            await handleNotificationToggle(newValue)
+                        }
+                    }
                 }
 
                 Section() {
@@ -140,9 +154,6 @@ struct SettingsView: View {
                 Text("data_cannot_recover")
             }
             .preferredColorScheme(appearance.colorScheme)
-            .sheet(isPresented: $showLocationPicker) {
-                LocationPickerView(prayerTimeManager: prayerTimeManager)
-            }
         }
     }
     
@@ -171,6 +182,28 @@ struct SettingsView: View {
         }
     }
     
+    private func handleNotificationToggle(_ enabled: Bool) async {
+        if enabled {
+            // Berechtigung anfordern
+            let granted = await notificationManager.requestAuthorization()
+            if granted {
+                // Benachrichtigungen planen wenn Zeiten vorhanden
+                if let times = prayerTimeManager.todaysTimes,
+                   let cityName = prayerTimeManager.selectedCity?.name {
+                    await notificationManager.scheduleNotifications(for: times, cityName: cityName)
+                }
+            } else {
+                // Berechtigung verweigert - Toggle zurücksetzen
+                await MainActor.run {
+                    notificationsEnabled = false
+                }
+            }
+        } else {
+            // Benachrichtigungen deaktivieren
+            await notificationManager.cancelAllNotifications()
+        }
+    }
+
     private func deleteAllData() {
         // Speichere hasSeenWelcome, damit die Welcome-Seite nicht erneut angezeigt wird
         let hasSeenWelcome = UserDefaults.standard.bool(forKey: "hasSeenWelcome")

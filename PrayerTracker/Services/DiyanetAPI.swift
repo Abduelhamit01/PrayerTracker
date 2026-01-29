@@ -13,7 +13,6 @@ class DiyanetAPI {
     static let shared = DiyanetAPI()
 
     // MARK: - Configuration
-    // Alle sensiblen Daten werden aus Secrets.swift geladen (nicht in Git eingecheckt)
     private let baseURL = Secrets.diyanetBaseURL
     private let username = Secrets.diyanetUsername
     private let password = Secrets.diyanetPassword
@@ -48,14 +47,20 @@ class DiyanetAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("PrayerTracker/1.0 iOS", forHTTPHeaderField: "User-Agent")
 
-        let body = ["username": username, "password": password]
+        // API erwartet "Email" und "Password"
+        let body = ["Email": username, "Password": password]
         request.httpBody = try JSONEncoder().encode(body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw DiyanetAPIError.authenticationFailed
+        }
+        
+        if httpResponse.statusCode != 200 {
             throw DiyanetAPIError.authenticationFailed
         }
 
@@ -67,7 +72,8 @@ class DiyanetAPI {
 
         self.accessToken = authData.accessToken
         self.refreshToken = authData.refreshToken
-        self.tokenExpiry = Date().addingTimeInterval(TimeInterval(authData.expiresIn))
+        // Token ist 45 Minuten gültig (laut API Dokumentation)
+        self.tokenExpiry = Date().addingTimeInterval(45 * 60)
     }
 
     /// Stellt sicher, dass ein gültiger Token vorhanden ist
@@ -91,6 +97,8 @@ class DiyanetAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("PrayerTracker/1.0 iOS", forHTTPHeaderField: "User-Agent")
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -99,7 +107,11 @@ class DiyanetAPI {
             throw DiyanetAPIError.requestFailed
         }
 
-        return try JSONDecoder().decode(T.self, from: data)
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw error
+        }
     }
 
     // MARK: - Public API Methods
@@ -112,20 +124,24 @@ class DiyanetAPI {
 
     /// Bundesländer für ein Land abrufen
     func getStates(countryID: Int) async throws -> [DiyanetState] {
-        let response: StatesResponse = try await authenticatedRequest(endpoint: "\(Secrets.statesEndpoint)?countryID=\(countryID)")
+        // API verwendet Pfad-Parameter: /api/Place/States/{countryId}
+        let response: StatesResponse = try await authenticatedRequest(endpoint: "\(Secrets.statesEndpoint)/\(countryID)")
         return response.data
     }
 
     /// Städte für ein Bundesland abrufen
     func getCities(stateID: Int) async throws -> [City] {
-        let response: CitiesResponse = try await authenticatedRequest(endpoint: "\(Secrets.citiesEndpoint)?stateID=\(stateID)")
+        // API verwendet Pfad-Parameter: /api/Place/Cities/{stateId}
+        let response: CitiesResponse = try await authenticatedRequest(endpoint: "\(Secrets.citiesEndpoint)/\(stateID)")
         return response.data
     }
 
     /// Tägliche Gebetszeiten für eine Stadt abrufen
     func getDailyPrayerTimes(cityID: Int) async throws -> PrayerTimes {
-        let response: PrayerTimesResponse = try await authenticatedRequest(endpoint: "\(Secrets.dailyTimesEndpoint)?cityID=\(cityID)")
-        guard let times = response.data else {
+        // API verwendet Pfad-Parameter: /api/PrayerTime/Daily/{cityId}
+        // Response ist ein Array mit einem Element
+        let response: PrayerTimesResponse = try await authenticatedRequest(endpoint: "\(Secrets.dailyTimesEndpoint)/\(cityID)")
+        guard let times = response.data.first else {
             throw DiyanetAPIError.invalidResponse
         }
         return times
