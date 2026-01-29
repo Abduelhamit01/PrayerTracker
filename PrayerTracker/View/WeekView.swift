@@ -91,7 +91,6 @@ struct WeekView: View {
             .scrollPosition($position)
             .scrollTargetBehavior(.paging)
             .scrollIndicators(.hidden)
-            .padding(.bottom, 10)
             .onAppear {
                 position.scrollTo(id: 0)
                 updateMonthDisplay(for: 0)

@@ -36,6 +36,7 @@ struct ContentView: View {
     @State private var trigger: Int = 0
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
+    @State private var showWhatsNew: Bool = false
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
     var body: some View {
@@ -58,6 +59,15 @@ struct ContentView: View {
             radius: ConfettiConfiguration.radius,
             repetitionInterval: ConfettiConfiguration.repetitionInterval
         )
+        .sheet(isPresented: $showWhatsNew) {
+            WhatsNewView()
+        }
+        .onAppear {
+            if WhatsNewManager.shouldShowWhatsNew {
+                showWhatsNew = true
+                WhatsNewManager.markAsSeen()
+            }
+        }
     }
 
 
@@ -68,8 +78,7 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 8) {
                     WeekView(manager: manager)
-                    Spacer()
-                    NextPrayerCountdownView()
+                    NextPrayerCountdownView(prayerTimeManager: prayerTimeManager)
 
                     ForEach(manager.prayers) { prayer in
                         PrayerCard(
@@ -83,6 +92,7 @@ struct ContentView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 20)
             }
+            .contentMargins(.top, -10, for: .scrollContent)
             .background(Color(.systemGroupedBackground))
             .toolbar { homeToolbar }
             .fullScreenCover(isPresented: $showSettings) {
