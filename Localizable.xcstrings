@@ -1601,6 +1601,50 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Ramadan-Modus mit Mondphasen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ramadan mode with moon phases"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ay evreleri ile Ramazan modu"
+          }
+        }
+      }
+    },
+    "whats_new_feature_2" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einrichtungs-Assistent für neue Benutzer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup assistant for new users"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni kullanıcılar için kurulum asistanı"
+          }
+        }
+      }
+    },
+    "whats_new_feature_3" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Echte Gebetszeiten von Diyanet"
           }
         },
@@ -1618,29 +1662,7 @@
         }
       }
     },
-    "whats_new_feature_2" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Countdown bis zum nächsten Gebet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Countdown to next prayer"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonraki namaza geri sayım"
-          }
-        }
-      }
-    },
-    "whats_new_feature_3" : {
+    "whats_new_feature_4" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1662,7 +1684,7 @@
         }
       }
     },
-    "whats_new_feature_4" : {
+    "whats_new_feature_5" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
