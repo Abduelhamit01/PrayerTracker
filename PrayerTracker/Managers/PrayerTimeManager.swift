@@ -200,8 +200,20 @@ class PrayerTimeManager: ObservableObject {
         }
     }
 
-    /// Setzt den ausgewählten Standort
+    /// Setzt den ausgewählten Standort (nur City)
     func setLocation(city: City) {
+        selectedCity = city
+        todaysTimes = nil
+        saveLocation()
+        Task {
+            await fetchTodaysTimes()
+        }
+    }
+
+    /// Setzt den kompletten Standort (Country, State, City)
+    func setFullLocation(country: Country, state: DiyanetState, city: City) {
+        selectedCountry = country
+        selectedState = state
         selectedCity = city
         todaysTimes = nil
         saveLocation()

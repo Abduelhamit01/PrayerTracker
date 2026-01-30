@@ -120,6 +120,7 @@ struct StateSelectionView: View {
                         NavigationLink {
                             CitySelectionView(
                                 prayerTimeManager: prayerTimeManager,
+                                country: country,
                                 state: state,
                                 onLocationSelected: onLocationSelected
                             )
@@ -174,6 +175,7 @@ struct StateSelectionView: View {
 
 struct CitySelectionView: View {
     @ObservedObject var prayerTimeManager: PrayerTimeManager
+    let country: Country
     let state: DiyanetState
     var onLocationSelected: (() -> Void)?
 
@@ -259,8 +261,9 @@ struct CitySelectionView: View {
     }
 
     private func selectCity(_ city: City) {
-        prayerTimeManager.setLocation(city: city)
-        // Callback um Settings zu schließen
+        // Speichert Country, State und City komplett
+        prayerTimeManager.setFullLocation(country: country, state: state, city: city)
+        // Callback um Sheet/Navigation zu schließen
         onLocationSelected?()
     }
 }
