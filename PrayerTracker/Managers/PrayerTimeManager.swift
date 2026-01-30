@@ -238,20 +238,23 @@ class PrayerTimeManager: ObservableObject {
     private func loadSavedLocation() {
         let defaults = UserDefaults.standard
 
+        // City laden (stateID ist optional)
         if let cityID = defaults.object(forKey: cityIDKey) as? Int,
-           let cityName = defaults.string(forKey: cityNameKey),
-           let stateID = defaults.object(forKey: stateIDKey) as? Int {
+           let cityName = defaults.string(forKey: cityNameKey) {
             let cityCode = defaults.string(forKey: cityCodeKey)
+            let stateID = defaults.object(forKey: stateIDKey) as? Int
             selectedCity = City(id: cityID, name: cityName, stateID: stateID, code: cityCode)
         }
 
+        // State laden (countryID ist optional)
         if let stateID = defaults.object(forKey: stateIDKey) as? Int,
-           let stateName = defaults.string(forKey: stateNameKey),
-           let countryID = defaults.object(forKey: countryIDKey) as? Int {
+           let stateName = defaults.string(forKey: stateNameKey) {
             let stateCode = defaults.string(forKey: stateCodeKey)
+            let countryID = defaults.object(forKey: countryIDKey) as? Int
             selectedState = DiyanetState(id: stateID, name: stateName, countryID: countryID, code: stateCode)
         }
 
+        // Country laden
         if let countryID = defaults.object(forKey: countryIDKey) as? Int,
            let countryName = defaults.string(forKey: countryNameKey) {
             let countryCode = defaults.string(forKey: countryCodeKey)
@@ -263,31 +266,29 @@ class PrayerTimeManager: ObservableObject {
     private func saveLocation() {
         let defaults = UserDefaults.standard
 
-        if let city = selectedCity {
-            defaults.set(city.id, forKey: cityIDKey)
-            defaults.set(city.name, forKey: cityNameKey)
-            defaults.set(city.code, forKey: cityCodeKey)
-            // stateID von selectedState nehmen, da API es nicht liefert
-            if let state = selectedState {
-                defaults.set(state.id, forKey: stateIDKey)
-            }
-        }
-
-        if let state = selectedState {
-            defaults.set(state.id, forKey: stateIDKey)
-            defaults.set(state.name, forKey: stateNameKey)
-            defaults.set(state.code, forKey: stateCodeKey)
-            // countryID von selectedCountry nehmen, da API es nicht liefert
-            if let country = selectedCountry {
-                defaults.set(country.id, forKey: countryIDKey)
-            }
-        }
-
+        // Country speichern
         if let country = selectedCountry {
             defaults.set(country.id, forKey: countryIDKey)
             defaults.set(country.name, forKey: countryNameKey)
             defaults.set(country.code, forKey: countryCodeKey)
         }
+
+        // State speichern
+        if let state = selectedState {
+            defaults.set(state.id, forKey: stateIDKey)
+            defaults.set(state.name, forKey: stateNameKey)
+            defaults.set(state.code, forKey: stateCodeKey)
+        }
+
+        // City speichern
+        if let city = selectedCity {
+            defaults.set(city.id, forKey: cityIDKey)
+            defaults.set(city.name, forKey: cityNameKey)
+            defaults.set(city.code, forKey: cityCodeKey)
+        }
+
+        // Sofort auf Disk schreiben (wichtig bei App-Kill)
+        defaults.synchronize()
     }
 
     /// Lädt gecachte Gebetszeiten
