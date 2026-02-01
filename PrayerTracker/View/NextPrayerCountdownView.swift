@@ -11,20 +11,45 @@ import Combine
 struct NextPrayerCountdownView: View {
     @ObservedObject var prayerTimeManager: PrayerTimeManager
 
-    @State private var timeRemaining: TimeInterval = 0
-    @State private var nextPrayer: (id: String, name: String, time: String)?
+    @State private var now = Date()
 
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
+    private var nextPrayerInfo: (id: String, name: String, time: String, remaining: TimeInterval)? {
+        guard let times = prayerTimeManager.todaysTimes else { return nil }
+
+        let prayers: [(id: String, name: String, time: String)] = [
+            ("fajr", "Fajr", times.fajr),
+            ("dhuhr", "Dhuhr", times.dhuhr),
+            ("asr", "Asr", times.asr),
+            ("maghrib", "Maghrib", times.maghrib),
+            ("isha", "Isha", times.isha)
+        ]
+
+        for prayer in prayers {
+            if let prayerDate = dateFromTimeString(prayer.time), prayerDate > now {
+                return (prayer.id, prayer.name, prayer.time, prayerDate.timeIntervalSince(now))
+            }
+        }
+
+        // Alle Gebete vorbei - zeige Fajr von morgen
+        if let fajrTime = dateFromTimeString(times.fajr) {
+            let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: fajrTime)!
+            return ("fajr", "Fajr", times.fajr, tomorrow.timeIntervalSince(now))
+        }
+
+        return nil
+    }
+
     var body: some View {
         Group {
-            if let prayer = nextPrayer, timeRemaining > 0 {
+            if let info = nextPrayerInfo, info.remaining > 0 {
                 VStack(spacing: 4) {
-                    Text(localizedPrayerName(prayer.id))
+                    Text(localizedPrayerName(info.id))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
-                    Text(formattedTime)
+                    Text(formattedTime(info.remaining))
                         .font(.system(size: 42, weight: .semibold, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(.primary)
@@ -34,16 +59,13 @@ struct NextPrayerCountdownView: View {
             }
         }
         .onReceive(timer) { _ in
-            updateCountdown()
-        }
-        .onAppear {
-            updateCountdown()
+            now = Date()
         }
     }
 
     // MARK: - Formatted Time
 
-    private var formattedTime: String {
+    private func formattedTime(_ timeRemaining: TimeInterval) -> String {
         let hours = Int(timeRemaining) / 3600
         let minutes = (Int(timeRemaining) % 3600) / 60
         let seconds = Int(timeRemaining) % 60
@@ -55,45 +77,7 @@ struct NextPrayerCountdownView: View {
         }
     }
 
-    // MARK: - Update Logic
-
-    private func updateCountdown() {
-        guard let times = prayerTimeManager.todaysTimes else {
-            nextPrayer = nil
-            return
-        }
-
-        let prayers: [(id: String, name: String, time: String)] = [
-            ("fajr", "Fajr", times.fajr),
-            ("dhuhr", "Dhuhr", times.dhuhr),
-            ("asr", "Asr", times.asr),
-            ("maghrib", "Maghrib", times.maghrib),
-            ("isha", "Isha", times.isha)
-        ]
-
-        let now = Date()
-        let calendar = Calendar.current
-
-        for prayer in prayers {
-            if let prayerDate = dateFromTimeString(prayer.time) {
-                if prayerDate > now {
-                    nextPrayer = prayer
-                    timeRemaining = prayerDate.timeIntervalSince(now)
-                    return
-                }
-            }
-        }
-
-        // Alle Gebete für heute vorbei - zeige Fajr von morgen
-        if let fajrTime = dateFromTimeString(times.fajr) {
-            let tomorrow = calendar.date(byAdding: .day, value: 1, to: fajrTime)!
-            nextPrayer = ("fajr", "Fajr", times.fajr)
-            timeRemaining = tomorrow.timeIntervalSince(now)
-        } else {
-            nextPrayer = nil
-            timeRemaining = 0
-        }
-    }
+    // MARK: - Helper
 
     private func dateFromTimeString(_ time: String) -> Date? {
         let components = time.split(separator: ":")

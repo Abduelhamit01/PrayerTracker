@@ -945,7 +945,6 @@
       }
     },
     "onboarding_enable_notifications" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1035,7 +1034,6 @@
       }
     },
     "onboarding_notification_subtitle" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1058,7 +1056,6 @@
       }
     },
     "onboarding_notification_title" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

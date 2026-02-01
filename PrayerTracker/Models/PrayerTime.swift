@@ -16,7 +16,7 @@ import Foundation
 //   "shapeMoonUrl": "https://...", "qiblaTime": "08:57"
 // }
 
-struct PrayerTimes: Codable {
+struct PrayerTimes: Codable, Equatable {
     let fajr: String
     let sunrise: String
     let dhuhr: String

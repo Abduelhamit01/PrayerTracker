@@ -28,6 +28,8 @@ struct OnboardingView: View {
                         welcomeContent
                     case .location:
                         locationContent
+                    case .notifications:
+                        notificationContent
                     case .complete:
                         completeContent
                     }
@@ -50,7 +52,7 @@ struct OnboardingView: View {
                     LocationSelectionView(prayerTimeManager: prayerTimeManager) {
                         showLocationPicker = false
                         withAnimation(.spring(duration: 0.4)) {
-                            currentStep = .complete
+                            currentStep = .notifications
                         }
                     }
                     .toolbar {
@@ -127,6 +129,28 @@ struct OnboardingView: View {
         }
     }
 
+    // MARK: - Notification Content
+
+    private var notificationContent: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "bell.fill")
+                .font(.system(size: 60))
+                .foregroundStyle(.islamicGreen)
+
+            VStack(spacing: 12) {
+                Text("onboarding_notification_title")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("onboarding_notification_subtitle")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 32)
+        }
+    }
+
     // MARK: - Complete Content
 
     private var completeContent: some View {
@@ -173,18 +197,33 @@ struct OnboardingView: View {
 
                     secondaryButton(title: "onboarding_skip") {
                         withAnimation(.spring(duration: 0.4)) {
-                            currentStep = .complete
+                            currentStep = .notifications
                         }
                     }
                 } else {
                     primaryButton(title: "onboarding_continue") {
                         withAnimation(.spring(duration: 0.4)) {
-                            currentStep = .complete
+                            currentStep = .notifications
                         }
                     }
 
                     secondaryButton(title: "onboarding_change_location") {
                         showLocationPicker = true
+                    }
+                }
+            }
+
+        case .notifications:
+            VStack(spacing: 12) {
+                primaryButton(title: "onboarding_enable_notifications") {
+                    Task {
+                        await enableNotifications()
+                    }
+                }
+
+                secondaryButton(title: "onboarding_skip") {
+                    withAnimation(.spring(duration: 0.4)) {
+                        currentStep = .complete
                     }
                 }
             }
@@ -218,6 +257,33 @@ struct OnboardingView: View {
                 .foregroundStyle(.secondary)
         }
     }
+
+    // MARK: - Enable Notifications
+
+    private func enableNotifications() async {
+        let granted = await PrayerNotificationManager.shared.requestAuthorization()
+
+        if granted {
+            // App-internen Toggle aktivieren
+            UserDefaults.standard.set(true, forKey: "notificationsEnabled")
+
+            // Sofort Benachrichtigungen planen (falls Standort gewählt)
+            if let times = prayerTimeManager.todaysTimes,
+               let cityName = prayerTimeManager.selectedCity?.name {
+                await PrayerNotificationManager.shared.scheduleNotifications(
+                    for: times,
+                    cityName: cityName
+                )
+            }
+        }
+
+        // Weiter zum nächsten Schritt
+        await MainActor.run {
+            withAnimation(.spring(duration: 0.4)) {
+                currentStep = .complete
+            }
+        }
+    }
 }
 
 // MARK: - Onboarding Step
@@ -225,7 +291,8 @@ struct OnboardingView: View {
 enum OnboardingStep: Int, CaseIterable {
     case welcome = 0
     case location = 1
-    case complete = 2
+    case notifications = 2
+    case complete = 3
 }
 
 // MARK: - Onboarding Manager

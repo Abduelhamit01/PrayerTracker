@@ -54,6 +54,9 @@ class PrayerNotificationManager: ObservableObject {
         // Erst alle alten Benachrichtigungen löschen
         await cancelAllNotifications()
 
+        // Status frisch prüfen (nicht gecachten Wert nutzen)
+        await checkAuthorizationStatus()
+
         guard isAuthorized else {
             print("Notifications not authorized")
             return
