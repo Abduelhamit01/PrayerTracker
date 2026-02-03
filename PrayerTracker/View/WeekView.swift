@@ -54,11 +54,27 @@ struct WeekView: View {
     }
 
     var body: some View {
-        VStack(spacing: 8) {
-            Text("\(monatsString)")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
+        VStack(spacing: 12) {
+            // Month Display with Glass Effect
+            HStack {
+                Image(systemName: "calendar")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                
+                Text("\(monatsString)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .textCase(.uppercase)
+                    .tracking(0.8)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.primary.opacity(0.12), lineWidth: 1)
+            )
 
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
@@ -70,7 +86,7 @@ struct WeekView: View {
                                     isSelected: calendar.isDate(date, inSameDayAs: manager.selectedDate),
                                     statusColor: getStatusColor(for: date),
                                     onTap: {
-                                        withAnimation {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                                             manager.selectedDate = date
                                             let offset = weekOffsetForDate(date)
                                             position.scrollTo(id: offset)
@@ -209,42 +225,78 @@ struct WeekView: View {
 
 
         var body: some View {
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 Text(dayFormatter.string(from: date).uppercased())
-                    .font(.caption2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
                     .foregroundStyle(isSelected ? .white : (isToday ? .islamicGreen : .secondary))
+                    .tracking(0.5)
 
                 Text(numberFormatter.string(from: date))
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .foregroundStyle(isSelected ? .white : (isToday ? .islamicGreen : .secondary))
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(isSelected ? .white : (isToday ? .islamicGreen : .primary))
 
-                // Status Punkt
-                Circle()
-                    .fill(statusColor)
-                    .frame(width: 6, height: 6)
-                    .opacity(statusColor == .clear ? 0 : 1)
+                // Status Punkt with glow effect
+                ZStack {
+                    if statusColor != .clear {
+                        Circle()
+                            .fill(statusColor.opacity(0.2))
+                            .frame(width: 10, height: 10)
+                        
+                        Circle()
+                            .fill(statusColor)
+                            .frame(width: 6, height: 6)
+                    }
+                }
+                .frame(height: 10)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 12)
             .background {
                 if isSelected {
-                    RoundedRectangle(cornerRadius: 13)
-                        .fill(Color.islamicGreen)
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.islamicGreen,
+                                    Color.islamicGreen.opacity(0.85)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .matchedGeometryEffect(id: "selectedDay", in: namespace)
+                        .shadow(color: .islamicGreen.opacity(0.4), radius: 8, x: 0, y: 4)
                 }
                 else if isToday {
-                    RoundedRectangle(cornerRadius: 13)
+                    RoundedRectangle(cornerRadius: 14)
                         .fill(cardBackground)
-                        .strokeBorder(Color.islamicGreen, lineWidth: 2)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.islamicGreen.opacity(0.8),
+                                            Color.islamicGreen.opacity(0.5)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        )
+                        .shadow(color: .islamicGreen.opacity(0.15), radius: 6, x: 0, y: 3)
                 }
                 else {
-                    RoundedRectangle(cornerRadius: 13)
+                    RoundedRectangle(cornerRadius: 14)
                         .fill(cardBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(.primary.opacity(0.08), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(colorScheme == .dark ? 0.2 : 0.04), radius: 4, x: 0, y: 2)
                 }
             }
-            .shadow(color: .black.opacity(colorScheme == .dark ? 0.2 : 0.04), radius: 4, x: 0, y: 2)
+            .contentShape(RoundedRectangle(cornerRadius: 14))
             .onTapGesture(perform: onTap)
         }
     }

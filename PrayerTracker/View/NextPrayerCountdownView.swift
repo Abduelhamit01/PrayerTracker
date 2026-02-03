@@ -10,6 +10,7 @@ import Combine
 
 struct NextPrayerCountdownView: View {
     @ObservedObject var prayerTimeManager: PrayerTimeManager
+    @Environment(\.colorScheme) var colorScheme
 
     @State private var now = Date()
 
@@ -40,22 +41,89 @@ struct NextPrayerCountdownView: View {
 
         return nil
     }
+    
+    private var prayerIcon: String {
+        guard let info = nextPrayerInfo else { return "moon.stars.fill" }
+        switch info.id {
+        case "fajr": return "sunrise.fill"
+        case "dhuhr": return "sun.max.fill"
+        case "asr": return "sun.min.fill"
+        case "maghrib": return "sunset.fill"
+        case "isha": return "moon.stars.fill"
+        default: return "moon.stars.fill"
+        }
+    }
 
     var body: some View {
         Group {
             if let info = nextPrayerInfo, info.remaining > 0 {
-                VStack(spacing: 4) {
+                VStack(spacing: 12) {
+                    HStack(spacing: 8) {
+                        Image(systemName: prayerIcon)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.islamicGreen)
+                        
+                        Text("Next Prayer")
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                            .tracking(1.0)
+                    }
+                    
                     Text(localizedPrayerName(info.id))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(.primary)
 
                     Text(formattedTime(info.remaining))
-                        .font(.system(size: 42, weight: .semibold, design: .rounded))
+                        .font(.system(size: 52, weight: .bold, design: .rounded))
                         .monospacedDigit()
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.islamicGreen, .islamicGreen.opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    
+                    Text("Until \(info.time)")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+                .padding(.vertical, 24)
+                .padding(.horizontal, 20)
+                .background(
+                    ZStack {
+                        if colorScheme == .dark {
+                            Color(.secondarySystemBackground)
+                        } else {
+                            LinearGradient(
+                                colors: [
+                                    Color.islamicGreen.opacity(0.04),
+                                    Color.islamicGreen.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        }
+                    }
+                )
+                .cornerRadius(20)
+                .shadow(color: .islamicGreen.opacity(0.1), radius: 12, x: 0, y: 6)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.islamicGreen.opacity(0.3),
+                                    Color.islamicGreen.opacity(0.1)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                )
             }
         }
         .onReceive(timer) { _ in

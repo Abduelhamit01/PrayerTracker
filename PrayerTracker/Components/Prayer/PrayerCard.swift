@@ -27,7 +27,14 @@ struct PrayerCard: View {
     }
 
     private var cardBackground: Color {
-        colorScheme == .dark ? Color(.secondarySystemBackground) : Color(.systemBackground)
+        if isAllCompleted {
+            return colorScheme == .dark 
+                ? Color(.secondarySystemBackground) 
+                : Color.islamicGreen.opacity(0.03)
+        }
+        return colorScheme == .dark 
+            ? Color(.secondarySystemBackground) 
+            : Color(.systemBackground)
     }
 
     // MARK: - Body
@@ -41,49 +48,81 @@ struct PrayerCard: View {
             }
         }
         .background(cardBackground)
-        .cornerRadius(14)
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.04), radius: 8, x: 0, y: 2)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.06), radius: 12, x: 0, y: 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    isAllCompleted 
+                        ? Color.islamicGreen.opacity(0.3)
+                        : Color.primary.opacity(0.08),
+                    lineWidth: isAllCompleted ? 1.5 : 1
+                )
+        )
     }
 
     // MARK: - Header
 
     private var headerButton: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 16) {
             iconBox
             titleAndProgress
             Spacer()
             statusAndChevron
         }
-        .padding(14)
+        .padding(16)
         .contentShape(Rectangle())
         .onTapGesture {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                 isExpanded.toggle()
             }
         }
     }
 
     private var iconBox: some View {
-        Image(systemName: prayer.icon)
-            .font(.system(size: 22))
-            .foregroundStyle(.islamicGreen)
-            .frame(width: 46, height: 46)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.systemGray6))
-            )
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    isAllCompleted 
+                        ? Color.islamicGreen.opacity(0.15)
+                        : Color(.systemGray6)
+                )
+            
+            Image(systemName: prayer.icon)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(
+                    isAllCompleted 
+                        ? Color.islamicGreen 
+                        : .primary
+                )
+        }
+        .frame(width: 52, height: 52)
     }
 
     private var titleAndProgress: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(prayer.name)
-                .font(.headline)
-                .fontWeight(.semibold)
+                .font(.system(size: 17, weight: .semibold, design: .default))
                 .foregroundColor(.primary)
 
-            Text("parts_completed \(completedCount) \(prayer.parts.count)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            HStack(spacing: 6) {
+                if let time = prayerTime {
+                    Image(systemName: "clock.fill")
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                    
+                    Text(time)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundColor(.secondary)
+                    
+                    Text("•")
+                        .foregroundColor(.secondary.opacity(0.5))
+                }
+                
+                Text("parts_completed \(completedCount) \(prayer.parts.count)")
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.secondary)
+            }
         }
     }
 
@@ -92,24 +131,24 @@ struct PrayerCard: View {
     }
 
     private var statusAndChevron: some View {
-        HStack(spacing: 10) {
-            // Gebetszeit anzeigen
-            if let time = prayerTime {
-                Text(time)
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundColor(.secondary)
-            }
-
+        HStack(spacing: 12) {
             if isAllCompleted {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.islamicGreen)
+                ZStack {
+                    Circle()
+                        .fill(Color.islamicGreen.opacity(0.15))
+                        .frame(width: 32, height: 32)
+                    
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.islamicGreen)
+                }
             }
 
             Image(systemName: "chevron.down")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 13, weight: .bold))
                 .foregroundColor(.secondary)
                 .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                .animation(.spring(response: 0.35, dampingFraction: 0.75), value: isExpanded)
         }
     }
 
@@ -118,7 +157,7 @@ struct PrayerCard: View {
     private var expandedContent: some View {
         VStack(spacing: 0) {
             Divider()
-                .padding(.leading, 74)
+                .padding(.leading, 84)
 
             ForEach(prayer.parts, id: \.self) { part in
                 PrayerPartRow(
@@ -129,7 +168,7 @@ struct PrayerCard: View {
 
                 if part != prayer.parts.last {
                     Divider()
-                        .padding(.leading, 74)
+                        .padding(.leading, 84)
                 }
             }
         }

@@ -10,13 +10,18 @@ import ConfettiSwiftUI
 import AVFoundation
 import UserNotifications
 
-// MARK: - Liquid Glass Modifier
+// MARK: - Liquid Glass Modifiers
 
 extension View {
+    /// Applies a Liquid Glass effect with capsule shape (iOS 26+, falls back to material on older versions)
     @ViewBuilder
-    func liquidGlass() -> some View {
+    func liquidGlass(interactive: Bool = false, tint: Color? = nil) -> some View {
         if #available(iOS 26.0, *) {
-            self.glassEffect(.regular, in: .capsule)
+            let baseGlass = Glass.regular
+            let tintedGlass = tint != nil ? baseGlass.tint(tint!) : baseGlass
+            let finalGlass = interactive ? tintedGlass.interactive() : tintedGlass
+            
+            self.glassEffect(finalGlass, in: .capsule)
         } else {
             self
                 .background(.ultraThinMaterial)
@@ -24,6 +29,47 @@ extension View {
                 .overlay(
                     Capsule()
                         .stroke(.primary.opacity(0.15), lineWidth: 1)
+                )
+        }
+    }
+    
+    /// Applies a Liquid Glass effect with custom shape
+    @ViewBuilder
+    func liquidGlass<S: Shape>(
+        in shape: S,
+        interactive: Bool = false,
+        tint: Color? = nil
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            let baseGlass = Glass.regular
+            let tintedGlass = tint != nil ? baseGlass.tint(tint!) : baseGlass
+            let finalGlass = interactive ? tintedGlass.interactive() : tintedGlass
+            
+            self.glassEffect(finalGlass, in: shape)
+        } else {
+            self
+                .background(.ultraThinMaterial)
+                .clipShape(shape)
+                .overlay(
+                    shape
+                        .stroke(.primary.opacity(0.15), lineWidth: 1)
+                )
+        }
+    }
+    
+    /// Applies a prominent Liquid Glass effect (for important elements)
+    @ViewBuilder
+    func liquidGlassProminent(interactive: Bool = true) -> some View {
+        if #available(iOS 26.0, *) {
+            let glass = Glass.regular.tint(.islamicGreen.opacity(0.15)).interactive(interactive)
+            self.glassEffect(glass, in: .rect(cornerRadius: 16))
+        } else {
+            self
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(.islamicGreen.opacity(0.2), lineWidth: 1.5)
                 )
         }
     }
@@ -83,17 +129,19 @@ struct ContentView: View {
     private var homeTab: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 8) {
+                VStack(spacing: 16) {
                     WeekView(manager: manager)
+                    
                     NextPrayerCountdownView(prayerTimeManager: prayerTimeManager)
+                        .padding(.top, 4)
 
-                    ForEach(manager.prayers) { prayer in
-                        PrayerCard(
-                            prayer: prayer,
-                            manager: manager,
-                            prayerTimeManager: prayerTimeManager,
-                            onPartTap: { part in handlePartTap(prayer: prayer, part: part) }
-                        )
+                    // Use GlassEffectContainer for prayer cards on iOS 26+
+                    if #available(iOS 26.0, *) {
+                        GlassEffectContainer(spacing: 12) {
+                            prayerCardsList
+                        }
+                    } else {
+                        prayerCardsList
                     }
                 }
                 .padding(.horizontal)
@@ -116,9 +164,9 @@ struct ContentView: View {
                                         .font(.system(size: 13, weight: .semibold))
                                         .foregroundStyle(.primary)
                                         .padding(8)
-                                        .background(.thinMaterial)
-                                        .clipShape(Circle())
+                                        .liquidGlass(in: Circle(), interactive: true)
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                 }
@@ -129,6 +177,22 @@ struct ContentView: View {
         }
         .tabItem {
             Label("Home", systemImage: "house")
+        }
+    }
+    
+    // MARK: - Prayer Cards List
+    
+    @ViewBuilder
+    private var prayerCardsList: some View {
+        VStack(spacing: 12) {
+            ForEach(manager.prayers) { prayer in
+                PrayerCard(
+                    prayer: prayer,
+                    manager: manager,
+                    prayerTimeManager: prayerTimeManager,
+                    onPartTap: { part in handlePartTap(prayer: prayer, part: part) }
+                )
+            }
         }
     }
 
@@ -161,6 +225,7 @@ struct ContentView: View {
                         manager.selectedDate = Date()
                     }
                 }
+                .buttonStyle(.glass)
             }
         }
 
@@ -170,6 +235,10 @@ struct ContentView: View {
             } label: {
                 Image(systemName: "gearshape.fill")
                     .symbolRenderingMode(.hierarchical)
+                    .font(.system(size: 18))
+                    .foregroundStyle(.primary)
+                    .frame(width: 36, height: 36)
+                    .liquidGlass(in: Circle(), interactive: true)
             }
             .buttonStyle(.plain)
         }
@@ -178,19 +247,24 @@ struct ContentView: View {
             Button {
                 showSettings = true
             } label: {
-                Text(prayerTimeManager.selectedCity?.displayName.uppercased() ?? String(localized: "location_placeholder"))
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .tracking(1.5)
-                    .foregroundStyle(.primary.opacity(0.85))
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                    .liquidGlass()
+                HStack(spacing: 6) {
+                    Image(systemName: "location.fill")
+                        .font(.system(size: 11, weight: .semibold))
+                    
+                    Text(prayerTimeManager.selectedCity?.displayName.uppercased() ?? String(localized: "location_placeholder"))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .tracking(1.2)
+                }
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .liquidGlass(interactive: true)
             }
             .buttonStyle(.plain)
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
-            Menu("", systemImage: "ellipsis.circle") {
+            Menu {
                 Button {
                     manager.completeAllPrayers()
                 } label: {
@@ -202,7 +276,14 @@ struct ContentView: View {
                 } label: {
                     Label("Clear all completions", systemImage: "trash")
                 }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .frame(width: 36, height: 36)
+                    .liquidGlass(in: Circle(), interactive: true)
             }
+            .buttonStyle(.plain)
         }
     }
 
