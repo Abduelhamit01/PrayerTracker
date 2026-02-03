@@ -101,7 +101,7 @@ struct PrayerCard: View {
 
     private var titleAndProgress: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(prayer.name)
+            Text(LocalizedStringKey(prayer.id))
                 .font(.system(size: 17, weight: .semibold, design: .default))
                 .foregroundColor(.primary)
 

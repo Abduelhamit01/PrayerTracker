@@ -58,21 +58,23 @@ struct NextPrayerCountdownView: View {
         Group {
             if let info = nextPrayerInfo, info.remaining > 0 {
                 VStack(spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: prayerIcon)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.islamicGreen)
-                        
-                        Text("Next Prayer")
+                    HStack(spacing: 6) {
+                        Text(String(localized: "until"))
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
                             .textCase(.uppercase)
                             .tracking(1.0)
+
+                        Text(localizedPrayerName(info.id))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                            .tracking(1.0)
+
+                        Image(systemName: prayerIcon)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.islamicGreen)
                     }
-                    
-                    Text(localizedPrayerName(info.id))
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(.primary)
 
                     Text(formattedTime(info.remaining))
                         .font(.system(size: 52, weight: .bold, design: .rounded))
@@ -84,10 +86,18 @@ struct NextPrayerCountdownView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                    
-                    Text("Until \(info.time)")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.secondary)
+
+                    // Sunrise-Info anzeigen wenn Fajr das nächste Gebet ist
+                    if info.id == "fajr", let sunrise = prayerTimeManager.todaysTimes?.sunrise {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sun.horizon.fill")
+                                .font(.system(size: 11))
+                            Text(String(localized: "sunrise_at \(sunrise)"))
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(.secondary.opacity(0.8))
+                        .padding(.top, 4)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
