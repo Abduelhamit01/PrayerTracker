@@ -92,6 +92,10 @@ class RamadanManager: ObservableObject {
     }
 
 
+    func refresh() {
+        objectWillChange.send()
+    }
+
     func completeToday() {
         completedDays.insert(todayKey)
         save()

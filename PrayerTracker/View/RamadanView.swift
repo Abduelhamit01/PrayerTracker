@@ -98,19 +98,25 @@ struct RamadanView: View {
                     .foregroundColor(textColor)
                     .padding(.bottom, 8)
 
-                if !ramadanManager.isRamadanActive {
+                if ramadanManager.isRamadanActive {
+                    Text("Tag \(ramadanManager.currentDay) von \(ramadanManager.totalDays)")
+                        .font(.headline)
+                        .foregroundColor(secondaryTextColor)
+                        .padding(.bottom, 4)
+                } else {
                     let daysUntil = Calendar.current.dateComponents([.day], from: Date(), to: ramadanManager.ramadanStart).day ?? 0
                     Text("Startet in \(daysUntil) Tagen")
                         .font(.headline)
                         .foregroundColor(secondaryTextColor)
                         .padding(.bottom, 4)
-                    
-                    RamadanTimelineView(
-                        currentDay: ramadanManager.isRamadanActive ? ramadanManager.currentDay : 0,
-                        ramadanStart: ramadanManager.ramadanStart
-                    )
-                    .padding(.vertical, 10)
                 }
+
+                RamadanTimelineView(
+                    currentDay: ramadanManager.isRamadanActive ? ramadanManager.currentDay : 0,
+                    completedDays: ramadanManager.completedDays,
+                    ramadanStart: ramadanManager.ramadanStart
+                )
+                .padding(.vertical, 10)
 
                 Spacer()
 
@@ -120,6 +126,12 @@ struct RamadanView: View {
                     .padding(.bottom, 40)
 
                 Spacer()
+            }
+        }
+        .onAppear {
+            ramadanManager.refresh()
+            if !ramadanManager.todayCompleted {
+                dragOffset = 0
             }
         }
         .navigationBarHidden(true)
@@ -135,6 +147,11 @@ struct RamadanView: View {
     }
 
     // MARK: - Mond Illustration
+
+    private var completionProgress: Double {
+        guard ramadanManager.totalDays > 0 else { return 0 }
+        return Double(ramadanManager.completedDays.count) / Double(ramadanManager.totalDays)
+    }
 
     private var moonIllustration: some View {
         ZStack {
@@ -154,12 +171,36 @@ struct RamadanView: View {
                 )
                 .frame(width: 200, height: 200)
 
+            // Fortschritts-Ring (Hintergrund)
+            Circle()
+                .stroke(moonColor.opacity(0.2), lineWidth: 6)
+                .frame(width: 160, height: 160)
+
+            // Fortschritts-Ring (gefüllt)
+            Circle()
+                .trim(from: 0, to: completionProgress)
+                .stroke(
+                    moonColor,
+                    style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                )
+                .frame(width: 160, height: 160)
+                .rotationEffect(.degrees(-90))
+                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: completionProgress)
+
             // Mond mit Sternen - Gold/Amber
             Image(systemName: "moon.stars.fill")
-                .font(.system(size: 100))
+                .font(.system(size: 80))
                 .symbolRenderingMode(.palette)
                 .foregroundStyle(moonColor, starColor)
                 .shadow(color: moonColor.opacity(0.6), radius: 20)
+
+            // Fortschritt-Text unter dem Mond
+            if ramadanManager.isRamadanActive {
+                Text("\(ramadanManager.completedDays.count)/\(ramadanManager.totalDays)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(moonColor)
+                    .offset(y: 70)
+            }
         }
     }
 

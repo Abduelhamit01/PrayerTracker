@@ -3,6 +3,7 @@ import SwiftUI
 struct RamadanTimelineView: View {
     // Parameter, die von außen kommen
     let currentDay: Int
+    let completedDays: Set<String>
     let totalDays: Int = 30
     let ramadanStart: Date
     
@@ -49,10 +50,16 @@ struct RamadanTimelineView: View {
         return Calendar.current.date(byAdding: .day, value: day - 1, to: ramadanStart) ?? Date()
     }
     
-    // Bestimmt den Status des Tages
+    // Bestimmt den Status des Tages anhand der echten Check-in-Daten
     private func getDayState(day: Int) -> DayState {
-        if day < currentDay { return .completed }
         if day == currentDay { return .current }
+
+        let date = getDate(for: day)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let key = formatter.string(from: date)
+
+        if completedDays.contains(key) { return .completed }
         return .future
     }
     
