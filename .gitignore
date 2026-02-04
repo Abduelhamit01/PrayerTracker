@@ -68,3 +68,13 @@ iOSInjectionProject/
 
 # Secrets (API Credentials - NICHT einchecken!)
 **/Secrets.swift
+
+# Persönliche Referenz-/Guide-Dateien
+PrayerTracker/View/LiquidGlassComponents.swift
+PrayerTracker/View/LiquidGlassGuide.swift
+PrayerTracker/View/LiquidGlassShowcase.swift
+PrayerTracker/View/APPSTORE_LAUNCH_CHECKLIST.md
+PrayerTracker/View/APPSTORE_MARKETING_TEXTS.md
+PrayerTracker/View/DESIGN_SYSTEM.md
+PrayerTracker/View/JUNIOR_DEVELOPER_GUIDE.md
+PrayerTracker/View/MODERNIZATION_SUMMARY.md
