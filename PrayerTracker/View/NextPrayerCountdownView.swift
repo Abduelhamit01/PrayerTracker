@@ -21,6 +21,7 @@ struct NextPrayerCountdownView: View {
 
         let prayers: [(id: String, name: String, time: String)] = [
             ("fajr", "Fajr", times.fajr),
+            ("sunrise", "Sunrise", times.sunrise),
             ("dhuhr", "Dhuhr", times.dhuhr),
             ("asr", "Asr", times.asr),
             ("maghrib", "Maghrib", times.maghrib),
@@ -46,6 +47,7 @@ struct NextPrayerCountdownView: View {
         guard let info = nextPrayerInfo else { return "moon.stars.fill" }
         switch info.id {
         case "fajr": return "sunrise.fill"
+        case "sunrise": return "sun.horizon.fill"
         case "dhuhr": return "sun.max.fill"
         case "asr": return "sun.min.fill"
         case "maghrib": return "sunset.fill"
@@ -177,6 +179,7 @@ struct NextPrayerCountdownView: View {
     private func localizedPrayerName(_ id: String) -> LocalizedStringKey {
         switch id {
         case "fajr": return "fajr"
+        case "sunrise": return "sunrise"
         case "dhuhr": return "dhuhr"
         case "asr": return "asr"
         case "maghrib": return "maghrib"

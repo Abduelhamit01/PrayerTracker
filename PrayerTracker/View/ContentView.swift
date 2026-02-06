@@ -84,6 +84,7 @@ struct ContentView: View {
     @State private var showSettings: Bool = false
     @State private var showWhatsNew: Bool = false
     @State private var showOnboarding: Bool = false
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
     var body: some View {
@@ -173,6 +174,13 @@ struct ContentView: View {
             }
             .task {
                 await prayerTimeManager.fetchTodaysTimes()
+            }
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                if newPhase == .active {
+                    Task {
+                        await prayerTimeManager.fetchTodaysTimes()
+                    }
+                }
             }
         }
         .tabItem {
