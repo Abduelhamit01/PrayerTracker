@@ -97,8 +97,6 @@ struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
 
 }
 
-
-
 struct NextPrayerLockScreenEntryView : View {
     var entry: NextPrayerLockScreenProvider.Entry
     

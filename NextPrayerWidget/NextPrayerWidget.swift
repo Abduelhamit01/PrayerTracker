@@ -114,6 +114,13 @@ struct SimpleEntry: TimelineEntry {
 struct NextPrayerWidgetEntryView : View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var widgetFamily
+    @Environment(\.colorScheme) var colorScheme
+
+    private var widgetBackground: Color {
+        colorScheme == .dark
+            ? Color(red: 0.0, green: 0.22, blue: 0.10)  // Dunkles Islamic Green
+            : Color(red: 0.85, green: 0.95, blue: 0.85)  // Helles Islamic Green
+    }
 
     var body: some View {
         if widgetFamily == .accessoryCircular {
@@ -132,16 +139,30 @@ struct NextPrayerWidgetEntryView : View {
         } else {
         VStack(alignment: .center) {
             Text(entry.location)
-                .font(.footnote)
+                .font(.system(.footnote, design: .rounded, weight: .semibold))
                 .textCase(.uppercase)
             Spacer()
             Text("Until \(entry.prayerName)")
+                .font(.system(.body, design: .rounded, weight: .medium))
             Text(entry.prayerTime, style: .timer)
+                .font(.system(.title, design: .rounded, weight: .bold))
                 .multilineTextAlignment(.center)
             Spacer()
             Text(entry.prayerTime, style: .time)
+                .font(.system(.body, design: .rounded, weight: .semibold))
             }
+            .dynamicTypeSize(...DynamicTypeSize.large)
         }
+    }
+}
+
+private struct WidgetBackgroundView: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        colorScheme == .dark
+            ? Color(red: 0.0, green: 0.22, blue: 0.10)  // Dunkles Islamic Green
+            : Color(red: 0.85, green: 0.95, blue: 0.85)  // Helles Islamic Green
     }
 }
 
@@ -151,7 +172,9 @@ struct NextPrayerWidget: Widget {
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
             NextPrayerWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(for: .widget) {
+                    WidgetBackgroundView()
+                }
         }
         .supportedFamilies([.systemSmall, .accessoryCircular])
     }

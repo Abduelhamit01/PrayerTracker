@@ -90,6 +90,17 @@ struct AllPrayerTimesWidgetEntryView : View {
                 }
             }
         }
+        .dynamicTypeSize(...DynamicTypeSize.large)
+    }
+}
+
+private struct AllPrayerWidgetBackgroundView: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        colorScheme == .dark
+            ? Color(red: 0.0, green: 0.22, blue: 0.10)
+            : Color(red: 0.85, green: 0.95, blue: 0.85)
     }
 }
 
@@ -99,7 +110,9 @@ struct AllPrayerTimesWidget: Widget {
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: AllPrayerTimesProvider()) { entry in
             AllPrayerTimesWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(for: .widget) {
+                    AllPrayerWidgetBackgroundView()
+                }
         }
         .supportedFamilies([.systemSmall, .systemMedium])
     }
