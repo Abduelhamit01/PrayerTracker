@@ -24,14 +24,79 @@ struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
     }
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<NextPrayerLockScreenEntry> {
-        let entry = NextPrayerLockScreenEntry(date: Date(), prayer: "Salah", prayerTime: Date())
+        var entries: [NextPrayerLockScreenEntry] = []
+        
         let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-
         
+        guard let data = shared?.data(forKey: "widgetPrayerTimes"),
+              let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
+            // Return placeholder entry when data is not available
+            let entry = NextPrayerLockScreenEntry(date: Date(),
+                                                  prayer: "Salah",
+                                                  prayerTime: Date())
+            
+            return Timeline(entries: [entry], policy: .atEnd)
+        }
         
-        return Timeline(entries: [entry], policy: .atEnd)
+        let tomorrowTimes: PrayerTimes? = {
+            guard let data = shared?.data(forKey: "widgetTomorrowPrayerTimes"),
+                  let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
+                return nil
+            }
+            return times
+        }()
+        
+        if let todayFajr = dateFromTimeString(times.fajr) {
+            let startEntry = NextPrayerLockScreenEntry(date: Calendar.current.startOfDay(for: Date()), prayer: "Fajr", prayerTime: todayFajr)
+            entries.append(startEntry)
+        }
+        
+        let schedule = [(start: times.fajr,    label: "Sunrise", target: times.sunrise),
+                        (start: times.sunrise, label: "Dhuhr",   target: times.dhuhr),
+                        (start: times.dhuhr,   label: "Asr",     target: times.asr),
+                        (start: times.asr,     label: "Maghrib", target: times.maghrib),
+                        (start: times.maghrib, label: "Isha",    target: times.isha),
+        ]
+        
+        for item in schedule {
+            if let startDate = dateFromTimeString(item.start),
+               let targetDate = dateFromTimeString(item.target) {
+                let entry = NextPrayerLockScreenEntry(date: startDate, prayer: item.label, prayerTime: targetDate)
+                entries.append(entry)
+            }
+        }
+        
+        if let ishaDate = dateFromTimeString(times.isha) {
+            let fajrString = tomorrowTimes?.fajr ?? times.fajr
+            if let fajrDate = dateFromTimeString(fajrString),
+               let tomorrowFajr = Calendar.current.date(byAdding: .day, value: 1, to: fajrDate) {
+                let entry = NextPrayerLockScreenEntry(date: ishaDate, prayer: "Fajr", prayerTime: tomorrowFajr)
+                entries.append(entry)
+            }
+        }
+        
+        return Timeline(entries: entries, policy: .atEnd)
     }
+    
+    func dateFromTimeString(_ time: String) -> Date? {
+       let components = time.split(separator: ":")
+       guard components.count == 2,
+             let hour = Int(components[0]),
+             let minute = Int(components[1]) else {
+           return nil
+       }
+
+       let calendar = Calendar.current
+       var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+       dateComponents.hour = hour
+       dateComponents.minute = minute
+       dateComponents.second = 0
+
+       return calendar.date(from: dateComponents)
+   }
+
 }
+
 
 
 struct NextPrayerLockScreenEntryView : View {

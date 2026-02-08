@@ -75,7 +75,6 @@ struct WeekView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(.primary.opacity(0.12), lineWidth: 1)
             )
-
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
                     ForEach(-52...52, id: \.self) { weekOffset in

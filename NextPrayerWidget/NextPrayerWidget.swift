@@ -22,9 +22,9 @@ struct Provider: AppIntentTimelineProvider {
         
         return SimpleEntry(
             date: Date(),
-            prayerName: "Maghrib",
+            prayerName: "Salah",
             prayerTime: Date().addingTimeInterval(3600),
-            location: "Bergisch Gladbach"
+            location: cityName
         )
     }
     
@@ -54,36 +54,34 @@ struct Provider: AppIntentTimelineProvider {
             return times
         }()
         
-        // Karte 1: Ab Fajr → zeig Countdown bis Sunrise
-        let fajrStart = dateFromTimeString(times.fajr)!
-        let sunriseTarget = dateFromTimeString(times.sunrise)!
-        entries.append(SimpleEntry(date: fajrStart, prayerName: "Sunrise", prayerTime: sunriseTarget, location: cityName))
-
-        // Karte 2: Ab Sunrise → zeig Countdown bis Dhuhr
-        let sunriseStart = dateFromTimeString(times.sunrise)!
-        let dhuhrTarget = dateFromTimeString(times.dhuhr)!
-        entries.append(SimpleEntry(date: sunriseStart, prayerName: "Dhuhr", prayerTime: dhuhrTarget, location: cityName))
-
-        // Karte 3: Ab Dhuhr → zeig Countdown bis Asr
-        let dhuhrStart = dateFromTimeString(times.dhuhr)!
-        let asrTarget = dateFromTimeString(times.asr)!
-        entries.append(SimpleEntry(date: dhuhrStart, prayerName: "Asr", prayerTime: asrTarget, location: cityName))
-
-        // Karte 4: Ab Asr → zeig Countdown bis Maghrib
-        let asrStart = dateFromTimeString(times.asr)!
-        let maghribTarget = dateFromTimeString(times.maghrib)!
-        entries.append(SimpleEntry(date: asrStart, prayerName: "Maghrib", prayerTime: maghribTarget, location: cityName))
-
-        // Karte 5: Ab Maghrib → zeig Countdown bis Isha
-        let maghribStart = dateFromTimeString(times.maghrib)!
-        let ishaTarget = dateFromTimeString(times.isha)!
-        entries.append(SimpleEntry(date: maghribStart, prayerName: "Isha", prayerTime: ishaTarget, location: cityName))
-
-        // Karte 6: Ab Isha → zeig Countdown bis Fajr (MORGEN, mit echten morgigen Zeiten)
-        let ishaStart = dateFromTimeString(times.isha)!
-        let tomorrowFajrString = tomorrowTimes?.fajr ?? times.fajr  // Morgige Fajr-Zeit, Fallback: heutige
-        let tomorrowFajrTarget = Calendar.current.date(byAdding: .day, value: 1, to: dateFromTimeString(tomorrowFajrString)!)!
-        entries.append(SimpleEntry(date: ishaStart, prayerName: "Fajr", prayerTime: tomorrowFajrTarget, location: cityName))
+        if let todayFajr = dateFromTimeString(times.fajr) {
+            let startEntry = SimpleEntry(date: Calendar.current.startOfDay(for: Date()), prayerName: "Fajr", prayerTime: todayFajr, location: cityName)
+            entries.append(startEntry)
+        }
+        
+        let schedules = [(start: times.fajr, label: "Sunrise", target: times.sunrise),
+                         (start: times.sunrise, label: "Dhuhr", target: times.dhuhr),
+                         (start: times.dhuhr, label: "Asr", target: times.asr),
+                         (start: times.asr, label: "Maghrib", target: times.maghrib),
+                         (start: times.maghrib, label: "Isha", target: times.isha),
+        ]
+        
+        for item in schedules {
+            if let start = dateFromTimeString(item.start),
+               let target = dateFromTimeString(item.target) {
+                let entry = SimpleEntry(date: start, prayerName: item.label, prayerTime: target, location: cityName)
+                entries.append(entry)
+            }
+        }
+        
+        if let ishaDate = dateFromTimeString(times.isha) {
+            let fajrString = tomorrowTimes?.fajr ?? times.fajr
+            if let fajrDate = dateFromTimeString(fajrString),
+               let tomorrowFajr = Calendar.current.date(byAdding: .day, value: 1, to: fajrDate) {
+                let entry = SimpleEntry(date: ishaDate, prayerName: "Fajr", prayerTime: tomorrowFajr, location: cityName)
+                entries.append(entry)
+            }
+        }
         
         return Timeline(entries: entries, policy: .atEnd)
     }
@@ -159,7 +157,7 @@ struct NextPrayerWidget: Widget {
             NextPrayerWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryCircular])
+        .supportedFamilies([.systemSmall, .accessoryCircular])
     }
 }
 
