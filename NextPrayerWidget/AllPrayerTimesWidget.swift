@@ -81,12 +81,18 @@ struct AllPrayerTimesProvider: AppIntentTimelineProvider {
 
 struct AllPrayerTimesWidgetEntryView : View {
     var entry: AllPrayerTimesProvider.Entry
+    @Environment(\.colorScheme) var colorScheme
+
+    private var borderColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 1) {
             Text(entry.location)
                 .font(.system(.caption2, design: .rounded, weight: .semibold))
                 .textCase(.uppercase)
+                .padding(.top)
             Spacer()
             VStack(spacing: 4) {
                 prayerRow(icon: "sunrise.fill", id: "fajr", name: "Fajr", time: entry.times?.fajr)
@@ -95,6 +101,7 @@ struct AllPrayerTimesWidgetEntryView : View {
                 prayerRow(icon: "sunset.fill", id: "maghrib", name: "Maghrib", time: entry.times?.maghrib)
                 prayerRow(icon: "moon.stars.fill", id: "isha", name: "Isha", time: entry.times?.isha)
             }
+            .padding(.bottom)
         }
         .dynamicTypeSize(...DynamicTypeSize.large)
     }
@@ -116,7 +123,7 @@ struct AllPrayerTimesWidgetEntryView : View {
         .padding(.vertical, 3)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(isCurrent ? .white.opacity(0.5) : .clear, lineWidth: 1)
+                .stroke(isCurrent ? borderColor.opacity(0.5) : .clear, lineWidth: 1)
         )
     }
 }
@@ -141,7 +148,7 @@ struct AllPrayerTimesWidget: Widget {
                     AllPrayerWidgetBackgroundView()
                 }
         }
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall])
     }
 }
 

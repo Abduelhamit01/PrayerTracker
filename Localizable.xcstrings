@@ -420,6 +420,28 @@
         }
       }
     },
+    "fajr_at %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fajr %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fajr %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sabah %@"
+          }
+        }
+      }
+    },
     "get_started" : {
       "localizations" : {
         "de" : {
@@ -1544,28 +1566,6 @@
         }
       }
     },
-    "fajr_at %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fajr %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fajr %@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sabah %@"
-          }
-        }
-      }
-    },
     "sunrise_at %@" : {
       "localizations" : {
         "de" : {
@@ -1798,6 +1798,7 @@
       }
     },
     "whats_new_feature_1" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1820,6 +1821,7 @@
       }
     },
     "whats_new_feature_2" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1842,6 +1844,7 @@
       }
     },
     "whats_new_feature_3" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1864,6 +1867,7 @@
       }
     },
     "whats_new_feature_4" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1886,6 +1890,7 @@
       }
     },
     "whats_new_feature_5" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1903,28 +1908,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Konum seçimi (Ülke/Şehir)"
-          }
-        }
-      }
-    },
-    "whats_new_widget" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets für den Homebildschirm"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets for the home screen"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ana ekran için widget'lar"
           }
         }
       }
@@ -1991,6 +1974,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anladım"
+          }
+        }
+      }
+    },
+    "whats_new_widget" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets für den Homebildschirm"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets for the home screen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ana ekran için widget'lar"
           }
         }
       }
