@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import WidgetKit
 
 // MARK: - Prayer Time Manager
 
@@ -102,6 +103,7 @@ class PrayerTimeManager: ObservableObject {
             }
         }
     }
+    
 
     /// Lädt alle Länder
     func fetchCountries() async {
@@ -207,6 +209,7 @@ class PrayerTimeManager: ObservableObject {
         saveLocation()
         Task {
             await fetchTodaysTimes()
+            WidgetCenter.shared.reloadAllTimelines()
         }
     }
 
@@ -219,7 +222,9 @@ class PrayerTimeManager: ObservableObject {
         saveLocation()
         Task {
             await fetchTodaysTimes()
+            WidgetCenter.shared.reloadAllTimelines()
         }
+
     }
 
     /// Öffentliche Methode zum Speichern des Standorts (für Onboarding)
@@ -312,15 +317,40 @@ class PrayerTimeManager: ObservableObject {
     /// Speichert Gebetszeiten im Cache
     private func cacheTimes(_ times: PrayerTimes) {
         let defaults = UserDefaults.standard
-
+        
         if let data = try? JSONEncoder().encode(times) {
             defaults.set(data, forKey: cachedTimesKey)
             defaults.set(dateFormatter.string(from: Date()), forKey: cachedDateKey)
             if let cityID = selectedCity?.id {
                 defaults.set(cityID, forKey: cachedCityIDKey)
             }
+            
+            if let cityID = selectedCity?.id {
+                Task {
+                    let weekly = try await DiyanetAPI.shared.getWeeklyPrayerTime(cityID: cityID)
+                    let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+                    let df = DateFormatter()
+                    df.dateFormat = "dd.MM.yyyy"
+                    let tomorrowString = df.string(from: tomorrowDate)
+                    
+                    let tomorrowTimes = weekly.first(where: { $0.gregorianDateShort == tomorrowString })
+                    if let tomorrowTimes = tomorrowTimes,
+                       let tomorrowData = try? JSONEncoder().encode(tomorrowTimes) {
+                        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+                        shared?.set(tomorrowData, forKey: "widgetTomorrowPrayerTimes")
+                        WidgetCenter.shared.reloadAllTimelines()
+                    }
+                }
+            }
+        }
+        
+        if let data = try? JSONEncoder().encode(times) {
+            let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+            shared?.set(data, forKey: "widgetPrayerTimes")
+            shared?.set(selectedCity?.displayName, forKey: "widgetCityName")
         }
     }
+    
 
     /// Prüft ob der Cache noch gültig ist (heute) und für die aktuelle Stadt
     private func isCacheValid() -> Bool {
