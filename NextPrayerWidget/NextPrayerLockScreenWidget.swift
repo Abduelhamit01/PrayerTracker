@@ -15,6 +15,8 @@ struct NextPrayerLockScreenEntry: TimelineEntry {
 }
 
 struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
+    let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+
     func placeholder(in context: Context) -> NextPrayerLockScreenEntry {
         NextPrayerLockScreenEntry(date: Date(), prayer: "Salah", prayerTime: Date())
     }
@@ -25,9 +27,7 @@ struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<NextPrayerLockScreenEntry> {
         var entries: [NextPrayerLockScreenEntry] = []
-        
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        
+
         guard let data = shared?.data(forKey: "widgetPrayerTimes"),
               let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
             // Return placeholder entry when data is not available

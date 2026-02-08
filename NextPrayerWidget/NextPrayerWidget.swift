@@ -9,17 +9,17 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: AppIntentTimelineProvider {
+    let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+
+    var cityName: String {
+        shared?.string(forKey: "widgetCityName") ?? "-"
+    }
+    
     func placeholder(in context: Context) -> SimpleEntry {
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        let cityName = shared?.string(forKey: "widgetCityName") ?? "-"
-        
         return SimpleEntry(date: Date(), prayerName: "Salah", prayerTime: Date(), location: cityName)
     }
 
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        let cityName = shared?.string(forKey: "widgetCityName") ?? "-"
-        
         return SimpleEntry(
             date: Date(),
             prayerName: "Salah",
@@ -30,10 +30,6 @@ struct Provider: AppIntentTimelineProvider {
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
-                
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        let cityName = shared?.string(forKey: "widgetCityName") ?? "-"
-
         
         guard let data = shared?.data(forKey: "widgetPrayerTimes"),
               let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {

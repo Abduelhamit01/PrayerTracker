@@ -15,12 +15,18 @@ struct AllPrayerTimesEntry: TimelineEntry {
 }
 
 struct AllPrayerTimesProvider: AppIntentTimelineProvider {
+    let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+
+    var cityName: String {
+        shared?.string(forKey: "widgetCityName") ?? "-"
+    }
+    
     func placeholder(in context: Context) -> AllPrayerTimesEntry {
-        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: "Standort")
+        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: cityName)
     }
     
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> AllPrayerTimesEntry {
-        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: "Standort")
+        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: cityName)
     }
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<AllPrayerTimesEntry> {
