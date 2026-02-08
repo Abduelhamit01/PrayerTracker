@@ -51,17 +51,17 @@ struct Provider: AppIntentTimelineProvider {
         }()
         
         if let todayFajr = dateFromTimeString(times.fajr) {
-            let startEntry = SimpleEntry(date: Calendar.current.startOfDay(for: Date()), prayerName: "Fajr", prayerTime: todayFajr, location: cityName)
+            let startEntry = SimpleEntry(date: Calendar.current.startOfDay(for: Date()), prayerName: "fajr", prayerTime: todayFajr, location: cityName)
             entries.append(startEntry)
         }
-        
-        let schedules = [(start: times.fajr, label: "Sunrise", target: times.sunrise),
-                         (start: times.sunrise, label: "Dhuhr", target: times.dhuhr),
-                         (start: times.dhuhr, label: "Asr", target: times.asr),
-                         (start: times.asr, label: "Maghrib", target: times.maghrib),
-                         (start: times.maghrib, label: "Isha", target: times.isha),
+
+        let schedules = [(start: times.fajr, label: "sunrise", target: times.sunrise),
+                         (start: times.sunrise, label: "dhuhr", target: times.dhuhr),
+                         (start: times.dhuhr, label: "asr", target: times.asr),
+                         (start: times.asr, label: "maghrib", target: times.maghrib),
+                         (start: times.maghrib, label: "isha", target: times.isha),
         ]
-        
+
         for item in schedules {
             if let start = dateFromTimeString(item.start),
                let target = dateFromTimeString(item.target) {
@@ -69,12 +69,12 @@ struct Provider: AppIntentTimelineProvider {
                 entries.append(entry)
             }
         }
-        
+
         if let ishaDate = dateFromTimeString(times.isha) {
             let fajrString = tomorrowTimes?.fajr ?? times.fajr
             if let fajrDate = dateFromTimeString(fajrString),
                let tomorrowFajr = Calendar.current.date(byAdding: .day, value: 1, to: fajrDate) {
-                let entry = SimpleEntry(date: ishaDate, prayerName: "Fajr", prayerTime: tomorrowFajr, location: cityName)
+                let entry = SimpleEntry(date: ishaDate, prayerName: "fajr", prayerTime: tomorrowFajr, location: cityName)
                 entries.append(entry)
             }
         }

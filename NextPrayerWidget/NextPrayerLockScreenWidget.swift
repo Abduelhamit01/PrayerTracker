@@ -47,17 +47,17 @@ struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
         }()
         
         if let todayFajr = dateFromTimeString(times.fajr) {
-            let startEntry = NextPrayerLockScreenEntry(date: Calendar.current.startOfDay(for: Date()), prayer: "Fajr", prayerTime: todayFajr)
+            let startEntry = NextPrayerLockScreenEntry(date: Calendar.current.startOfDay(for: Date()), prayer: "fajr", prayerTime: todayFajr)
             entries.append(startEntry)
         }
-        
-        let schedule = [(start: times.fajr,    label: "Sunrise", target: times.sunrise),
-                        (start: times.sunrise, label: "Dhuhr",   target: times.dhuhr),
-                        (start: times.dhuhr,   label: "Asr",     target: times.asr),
-                        (start: times.asr,     label: "Maghrib", target: times.maghrib),
-                        (start: times.maghrib, label: "Isha",    target: times.isha),
+
+        let schedule = [(start: times.fajr,    label: "sunrise", target: times.sunrise),
+                        (start: times.sunrise, label: "dhuhr",   target: times.dhuhr),
+                        (start: times.dhuhr,   label: "asr",     target: times.asr),
+                        (start: times.asr,     label: "maghrib", target: times.maghrib),
+                        (start: times.maghrib, label: "isha",    target: times.isha),
         ]
-        
+
         for item in schedule {
             if let startDate = dateFromTimeString(item.start),
                let targetDate = dateFromTimeString(item.target) {
@@ -65,12 +65,12 @@ struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
                 entries.append(entry)
             }
         }
-        
+
         if let ishaDate = dateFromTimeString(times.isha) {
             let fajrString = tomorrowTimes?.fajr ?? times.fajr
             if let fajrDate = dateFromTimeString(fajrString),
                let tomorrowFajr = Calendar.current.date(byAdding: .day, value: 1, to: fajrDate) {
-                let entry = NextPrayerLockScreenEntry(date: ishaDate, prayer: "Fajr", prayerTime: tomorrowFajr)
+                let entry = NextPrayerLockScreenEntry(date: ishaDate, prayer: "fajr", prayerTime: tomorrowFajr)
                 entries.append(entry)
             }
         }
