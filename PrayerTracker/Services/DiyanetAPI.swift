@@ -152,6 +152,12 @@ class DiyanetAPI {
         let response: PrayerTimesResponse = try await authenticatedRequest(endpoint: "\(Secrets.weeklyTimesEndpoint)/\(cityID)")
         return response.data
     }
+
+    /// Monatliche Gebetszeiten für eine Stadt abrufen
+    func getMonthlyPrayerTimes(cityID: Int) async throws -> [PrayerTimes] {
+        let response: PrayerTimesResponse = try await authenticatedRequest(endpoint: "\(Secrets.monthlyTimesEndpoint)/\(cityID)")
+        return response.data
+    }
 }
 
 // MARK: - API Errors

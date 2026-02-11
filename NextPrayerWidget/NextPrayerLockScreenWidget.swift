@@ -15,86 +15,81 @@ struct NextPrayerLockScreenEntry: TimelineEntry {
 }
 
 struct NextPrayerLockScreenProvider: AppIntentTimelineProvider {
-    let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
 
     func placeholder(in context: Context) -> NextPrayerLockScreenEntry {
         NextPrayerLockScreenEntry(date: Date(), prayer: "Salah", prayerTime: Date())
     }
-    
+
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> NextPrayerLockScreenEntry {
         NextPrayerLockScreenEntry(date: Date(), prayer: "Salah", prayerTime: Date())
     }
-    
+
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<NextPrayerLockScreenEntry> {
         var entries: [NextPrayerLockScreenEntry] = []
+        let calendar = Calendar.current
+        let today = Date()
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
 
-        guard let data = shared?.data(forKey: "widgetPrayerTimes"),
-              let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
-            // Return placeholder entry when data is not available
-            let entry = NextPrayerLockScreenEntry(date: Date(),
-                                                  prayer: "Salah",
-                                                  prayerTime: Date())
-            
+        // Dynamisch aus dem Monats-Array nachschlagen
+        let todayTimes = WidgetPrayerTimesHelper.times(for: today)
+        let tomorrowTimes = WidgetPrayerTimesHelper.times(for: tomorrow)
+
+        guard let times = todayTimes else {
+            let entry = NextPrayerLockScreenEntry(date: today, prayer: "Salah", prayerTime: today)
             return Timeline(entries: [entry], policy: .atEnd)
         }
-        
-        let tomorrowTimes: PrayerTimes? = {
-            guard let data = shared?.data(forKey: "widgetTomorrowPrayerTimes"),
-                  let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
-                return nil
-            }
-            return times
-        }()
-        
-        if let todayFajr = dateFromTimeString(times.fajr) {
-            let startEntry = NextPrayerLockScreenEntry(date: Calendar.current.startOfDay(for: Date()), prayer: "fajr", prayerTime: todayFajr)
-            entries.append(startEntry)
+
+        // --- Heute ---
+        if let todayFajr = WidgetPrayerTimesHelper.dateFromTimeString(times.fajr, on: today) {
+            entries.append(NextPrayerLockScreenEntry(date: calendar.startOfDay(for: today), prayer: "fajr", prayerTime: todayFajr))
         }
 
-        let schedule = [(start: times.fajr,    label: "sunrise", target: times.sunrise),
-                        (start: times.sunrise, label: "dhuhr",   target: times.dhuhr),
-                        (start: times.dhuhr,   label: "asr",     target: times.asr),
-                        (start: times.asr,     label: "maghrib", target: times.maghrib),
-                        (start: times.maghrib, label: "isha",    target: times.isha),
+        let todaySchedule = [
+            (start: times.fajr,    label: "sunrise", target: times.sunrise),
+            (start: times.sunrise, label: "dhuhr",   target: times.dhuhr),
+            (start: times.dhuhr,   label: "asr",     target: times.asr),
+            (start: times.asr,     label: "maghrib", target: times.maghrib),
+            (start: times.maghrib, label: "isha",    target: times.isha),
         ]
 
-        for item in schedule {
-            if let startDate = dateFromTimeString(item.start),
-               let targetDate = dateFromTimeString(item.target) {
-                let entry = NextPrayerLockScreenEntry(date: startDate, prayer: item.label, prayerTime: targetDate)
-                entries.append(entry)
+        for item in todaySchedule {
+            if let startDate = WidgetPrayerTimesHelper.dateFromTimeString(item.start, on: today),
+               let targetDate = WidgetPrayerTimesHelper.dateFromTimeString(item.target, on: today) {
+                entries.append(NextPrayerLockScreenEntry(date: startDate, prayer: item.label, prayerTime: targetDate))
             }
         }
 
-        if let ishaDate = dateFromTimeString(times.isha) {
-            let fajrString = tomorrowTimes?.fajr ?? times.fajr
-            if let fajrDate = dateFromTimeString(fajrString),
-               let tomorrowFajr = Calendar.current.date(byAdding: .day, value: 1, to: fajrDate) {
-                let entry = NextPrayerLockScreenEntry(date: ishaDate, prayer: "fajr", prayerTime: tomorrowFajr)
-                entries.append(entry)
+        // --- Nach Isha: Countdown auf morgen Fajr ---
+        let tomorrowFajrString = (tomorrowTimes ?? times).fajr
+        if let ishaDate = WidgetPrayerTimesHelper.dateFromTimeString(times.isha, on: today),
+           let tomorrowFajr = WidgetPrayerTimesHelper.dateFromTimeString(tomorrowFajrString, on: tomorrow) {
+            entries.append(NextPrayerLockScreenEntry(date: ishaDate, prayer: "fajr", prayerTime: tomorrowFajr))
+        }
+
+        // --- Morgen (damit Widget auch nach Tageswechsel korrekt ist) ---
+        if let tomorrowTimes {
+            if let tomorrowFajr = WidgetPrayerTimesHelper.dateFromTimeString(tomorrowTimes.fajr, on: tomorrow) {
+                entries.append(NextPrayerLockScreenEntry(date: calendar.startOfDay(for: tomorrow), prayer: "fajr", prayerTime: tomorrowFajr))
+            }
+
+            let tomorrowSchedule = [
+                (start: tomorrowTimes.fajr,    label: "sunrise", target: tomorrowTimes.sunrise),
+                (start: tomorrowTimes.sunrise, label: "dhuhr",   target: tomorrowTimes.dhuhr),
+                (start: tomorrowTimes.dhuhr,   label: "asr",     target: tomorrowTimes.asr),
+                (start: tomorrowTimes.asr,     label: "maghrib", target: tomorrowTimes.maghrib),
+                (start: tomorrowTimes.maghrib, label: "isha",    target: tomorrowTimes.isha),
+            ]
+
+            for item in tomorrowSchedule {
+                if let startDate = WidgetPrayerTimesHelper.dateFromTimeString(item.start, on: tomorrow),
+                   let targetDate = WidgetPrayerTimesHelper.dateFromTimeString(item.target, on: tomorrow) {
+                    entries.append(NextPrayerLockScreenEntry(date: startDate, prayer: item.label, prayerTime: targetDate))
+                }
             }
         }
-        
+
         return Timeline(entries: entries, policy: .atEnd)
     }
-    
-    func dateFromTimeString(_ time: String) -> Date? {
-       let components = time.split(separator: ":")
-       guard components.count == 2,
-             let hour = Int(components[0]),
-             let minute = Int(components[1]) else {
-           return nil
-       }
-
-       let calendar = Calendar.current
-       var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
-       dateComponents.hour = hour
-       dateComponents.minute = minute
-       dateComponents.second = 0
-
-       return calendar.date(from: dateComponents)
-   }
-
 }
 
 struct NextPrayerLockScreenEntryView : View {

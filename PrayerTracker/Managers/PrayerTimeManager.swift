@@ -15,6 +15,7 @@ import WidgetKit
 class PrayerTimeManager: ObservableObject {
     // MARK: - Published Properties
     @Published var todaysTimes: PrayerTimes?
+    @Published var tomorrowTimes: PrayerTimes?
     @Published var selectedCountry: Country?
     @Published var selectedState: DiyanetState?
     @Published var selectedCity: City?
@@ -38,14 +39,26 @@ class PrayerTimeManager: ObservableObject {
     private let countryIDKey = "selectedCountryID"
     private let countryNameKey = "selectedCountryName"
     private let countryCodeKey = "selectedCountryCode"
-    private let cachedTimesKey = "cachedPrayerTimes"
-    private let cachedDateKey = "cachedPrayerTimesDate"
-    private let cachedCityIDKey = "cachedPrayerTimesCityID"
+    // Monthly cache keys
+    private let cachedMonthlyTimesKey = "cachedMonthlyPrayerTimes"
+    private let cachedMonthKey = "cachedPrayerTimesMonth"
+    private let cachedMonthlyCityIDKey = "cachedMonthlyPrayerTimesCityID"
 
-    // MARK: - DateFormatter
+    // Old cache keys (for migration cleanup)
+    private let oldCachedTimesKey = "cachedPrayerTimes"
+    private let oldCachedDateKey = "cachedPrayerTimesDate"
+    private let oldCachedCityIDKey = "cachedPrayerTimesCityID"
+
+    // MARK: - DateFormatters
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
+
+    private let monthFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM.yyyy"
         return formatter
     }()
 
@@ -54,11 +67,12 @@ class PrayerTimeManager: ObservableObject {
     init() {
         loadSavedLocation()
         loadCachedTimes()
+        cleanupOldCacheKeys()
     }
 
     // MARK: - Public Methods
 
-    /// Lädt die heutigen Gebetszeiten
+    /// Lädt die heutigen Gebetszeiten (monatliches Caching)
     func fetchTodaysTimes() async {
         // Wenn Platzhalter aktiviert ist (keine API-Credentials)
         if usePlaceholder || !DiyanetAPI.shared.hasCredentials {
@@ -75,30 +89,70 @@ class PrayerTimeManager: ObservableObject {
             return
         }
 
-        // Prüfe ob gecachte Zeiten noch aktuell sind
-        if todaysTimes != nil, isCacheValid() {
-            return // Cache ist noch aktuell
+        // Daten bereits im Speicher und Cache gültig → nichts tun
+        let todayString = dateFormatter.string(from: Date())
+        if todaysTimes != nil, todaysTimes?.gregorianDateShort == todayString, isMonthCacheValid() {
+            return
         }
 
+        let today = Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let tomorrowString = dateFormatter.string(from: tomorrow)
+
+        // Monats-Cache gültig → Lookup aus Cache, kein API-Call
+        if isMonthCacheValid() {
+            let cached = loadMonthlyTimesFromDefaults()
+            let todayLookup = timesForDate(todayString, from: cached)
+            let tomorrowLookup = timesForDate(tomorrowString, from: cached)
+
+            if let todayLookup {
+                await MainActor.run {
+                    self.todaysTimes = todayLookup
+                    self.tomorrowTimes = tomorrowLookup
+                }
+                updateWidgetDefaults(today: todayLookup, tomorrow: tomorrowLookup)
+                await scheduleNotificationsIfEnabled(times: todayLookup)
+
+                // Monatsgrenze: morgen ist neuer Monat aber nicht im Cache
+                if tomorrowLookup == nil {
+                    await fetchNextMonthTomorrow(cityID: cityID, tomorrowString: tomorrowString)
+                }
+                return
+            }
+        }
+
+        // Cache ungültig → Monthly-Fetch
         await MainActor.run {
             self.isLoading = true
             self.error = nil
         }
 
         do {
-            let times = try await DiyanetAPI.shared.getDailyPrayerTimes(cityID: cityID)
+            let monthlyTimes = try await DiyanetAPI.shared.getMonthlyPrayerTimes(cityID: cityID)
+            let todayLookup = timesForDate(todayString, from: monthlyTimes)
+            let tomorrowLookup = timesForDate(tomorrowString, from: monthlyTimes)
+
             await MainActor.run {
-                self.todaysTimes = times
+                self.todaysTimes = todayLookup ?? .placeholder
+                self.tomorrowTimes = tomorrowLookup
                 self.isLoading = false
-                self.cacheTimes(times)
             }
-            // Benachrichtigungen aktualisieren wenn aktiviert
-            await scheduleNotificationsIfEnabled(times: times)
+
+            cacheMonthlyTimes(monthlyTimes)
+
+            if let todayLookup {
+                updateWidgetDefaults(today: todayLookup, tomorrow: tomorrowLookup)
+                await scheduleNotificationsIfEnabled(times: todayLookup)
+            }
+
+            // Monatsgrenze: morgen ist neuer Monat
+            if tomorrowLookup == nil {
+                await fetchNextMonthTomorrow(cityID: cityID, tomorrowString: tomorrowString)
+            }
         } catch {
             await MainActor.run {
                 self.error = error.localizedDescription
                 self.isLoading = false
-                // Bei Fehler: Platzhalter nutzen
                 self.todaysTimes = .placeholder
             }
         }
@@ -296,71 +350,110 @@ class PrayerTimeManager: ObservableObject {
         defaults.synchronize()
     }
 
-    /// Lädt gecachte Gebetszeiten
+    /// Lädt gecachte Gebetszeiten (monatlich)
     private func loadCachedTimes() {
-        let defaults = UserDefaults.standard
-
-        guard let data = defaults.data(forKey: cachedTimesKey),
-              isCacheValid() else {
-            // Kein Cache oder abgelaufen -> Platzhalter nutzen
+        guard isMonthCacheValid() else {
             todaysTimes = .placeholder
             return
         }
 
-        if let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) {
-            todaysTimes = times
+        let cached = loadMonthlyTimesFromDefaults()
+        let todayString = dateFormatter.string(from: Date())
+        let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        let tomorrowString = dateFormatter.string(from: tomorrowDate)
+
+        if let today = timesForDate(todayString, from: cached) {
+            todaysTimes = today
+            tomorrowTimes = timesForDate(tomorrowString, from: cached)
         } else {
             todaysTimes = .placeholder
         }
     }
 
-    /// Speichert Gebetszeiten im Cache
-    private func cacheTimes(_ times: PrayerTimes) {
-        let defaults = UserDefaults.standard
-        
-        if let data = try? JSONEncoder().encode(times) {
-            defaults.set(data, forKey: cachedTimesKey)
-            defaults.set(dateFormatter.string(from: Date()), forKey: cachedDateKey)
-            if let cityID = selectedCity?.id {
-                defaults.set(cityID, forKey: cachedCityIDKey)
-            }
-            
-            if let cityID = selectedCity?.id {
-                Task {
-                    let weekly = try await DiyanetAPI.shared.getWeeklyPrayerTime(cityID: cityID)
-                    let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-                    let df = DateFormatter()
-                    df.dateFormat = "dd.MM.yyyy"
-                    let tomorrowString = df.string(from: tomorrowDate)
-                    
-                    let tomorrowTimes = weekly.first(where: { $0.gregorianDateShort == tomorrowString })
-                    if let tomorrowTimes = tomorrowTimes,
-                       let tomorrowData = try? JSONEncoder().encode(tomorrowTimes) {
-                        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-                        shared?.set(tomorrowData, forKey: "widgetTomorrowPrayerTimes")
-                        WidgetCenter.shared.reloadAllTimelines()
-                    }
-                }
-            }
+    /// Lädt das monatliche Array aus UserDefaults
+    private func loadMonthlyTimesFromDefaults() -> [PrayerTimes] {
+        guard let data = UserDefaults.standard.data(forKey: cachedMonthlyTimesKey),
+              let times = try? JSONDecoder().decode([PrayerTimes].self, from: data) else {
+            return []
         }
-        
+        return times
+    }
+
+    /// Sucht in einem [PrayerTimes]-Array den Eintrag für ein bestimmtes Datum
+    private func timesForDate(_ dateString: String, from times: [PrayerTimes]) -> PrayerTimes? {
+        times.first { $0.gregorianDateShort == dateString }
+    }
+
+    /// Speichert monatliche Gebetszeiten im Cache (Standard + App Group)
+    private func cacheMonthlyTimes(_ times: [PrayerTimes]) {
         if let data = try? JSONEncoder().encode(times) {
+            // Standard UserDefaults (App-interner Cache)
+            let defaults = UserDefaults.standard
+            defaults.set(data, forKey: cachedMonthlyTimesKey)
+            defaults.set(monthFormatter.string(from: Date()), forKey: cachedMonthKey)
+            if let cityID = selectedCity?.id {
+                defaults.set(cityID, forKey: cachedMonthlyCityIDKey)
+            }
+
+            // App Group (für Widgets)
             let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-            shared?.set(data, forKey: "widgetPrayerTimes")
-            shared?.set(selectedCity?.displayName, forKey: "widgetCityName")
+            shared?.set(data, forKey: "widgetMonthlyPrayerTimes")
         }
     }
-    
 
-    /// Prüft ob der Cache noch gültig ist (heute) und für die aktuelle Stadt
-    private func isCacheValid() -> Bool {
+    /// Schreibt Today/Tomorrow + Monatsdaten + CityName in die App Group für Widgets
+    private func updateWidgetDefaults(today: PrayerTimes, tomorrow: PrayerTimes?) {
+        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
+        if let todayData = try? JSONEncoder().encode(today) {
+            shared?.set(todayData, forKey: "widgetPrayerTimes")
+        }
+        shared?.set(selectedCity?.displayName, forKey: "widgetCityName")
+
+        if let tomorrow, let tomorrowData = try? JSONEncoder().encode(tomorrow) {
+            shared?.set(tomorrowData, forKey: "widgetTomorrowPrayerTimes")
+        }
+
+        // Monatsdaten immer in App Group synchronisieren (auch aus Cache-Pfad)
+        if let monthlyData = UserDefaults.standard.data(forKey: cachedMonthlyTimesKey) {
+            shared?.set(monthlyData, forKey: "widgetMonthlyPrayerTimes")
+        }
+
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    /// Fetcht den nächsten Monat um die morgige Gebetszeit an der Monatsgrenze zu bekommen
+    private func fetchNextMonthTomorrow(cityID: Int, tomorrowString: String) async {
+        do {
+            let nextMonthTimes = try await DiyanetAPI.shared.getMonthlyPrayerTimes(cityID: cityID)
+            let tomorrowLookup = timesForDate(tomorrowString, from: nextMonthTimes)
+            await MainActor.run {
+                self.tomorrowTimes = tomorrowLookup
+            }
+            if let todaysTimes, let tomorrowLookup {
+                updateWidgetDefaults(today: todaysTimes, tomorrow: tomorrowLookup)
+            }
+        } catch {
+            // Nächster Monat konnte nicht geladen werden - nicht kritisch
+        }
+    }
+
+    /// Prüft ob der Monats-Cache noch gültig ist
+    private func isMonthCacheValid() -> Bool {
         let defaults = UserDefaults.standard
-        guard let cachedDate = defaults.string(forKey: cachedDateKey),
+        guard let cachedMonth = defaults.string(forKey: cachedMonthKey),
               let selectedCityID = selectedCity?.id,
-              let cachedCityID = defaults.object(forKey: cachedCityIDKey) as? Int else {
+              let cachedCityID = defaults.object(forKey: cachedMonthlyCityIDKey) as? Int else {
             return false
         }
-        return cachedDate == dateFormatter.string(from: Date()) && cachedCityID == selectedCityID
+        return cachedMonth == monthFormatter.string(from: Date()) && cachedCityID == selectedCityID
+    }
+
+    /// Einmalige Migration: alte Cache-Keys entfernen
+    private func cleanupOldCacheKeys() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: oldCachedTimesKey)
+        defaults.removeObject(forKey: oldCachedDateKey)
+        defaults.removeObject(forKey: oldCachedCityIDKey)
     }
 
     /// Sortiert Länder mit Türkei und Deutschland immer oben

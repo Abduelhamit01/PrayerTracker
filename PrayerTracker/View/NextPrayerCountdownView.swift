@@ -16,14 +16,9 @@ struct NextPrayerCountdownView: View {
 
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    /// Morgige Fajr-Zeit aus den Widget-UserDefaults
+    /// Morgige Fajr-Zeit direkt vom Manager
     private var tomorrowFajrTime: String? {
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        guard let data = shared?.data(forKey: "widgetTomorrowPrayerTimes"),
-              let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
-            return nil
-        }
-        return times.fajr
+        prayerTimeManager.tomorrowTimes?.fajr
     }
 
     /// Ob wir nach Isha sind und auf Fajr von morgen warten

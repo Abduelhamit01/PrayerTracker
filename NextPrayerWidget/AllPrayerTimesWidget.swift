@@ -16,34 +16,33 @@ struct AllPrayerTimesEntry: TimelineEntry {
 }
 
 struct AllPrayerTimesProvider: AppIntentTimelineProvider {
-    let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-
-    var cityName: String {
-        shared?.string(forKey: "widgetCityName") ?? "-"
-    }
 
     func placeholder(in context: Context) -> AllPrayerTimesEntry {
-        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: cityName, currentPrayer: "fajr")
+        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: WidgetPrayerTimesHelper.cityName, currentPrayer: "fajr")
     }
 
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> AllPrayerTimesEntry {
-        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: cityName, currentPrayer: "fajr")
+        AllPrayerTimesEntry(date: Date(), times: .placeholder, location: WidgetPrayerTimesHelper.cityName, currentPrayer: "fajr")
     }
 
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<AllPrayerTimesEntry> {
         var entries: [AllPrayerTimesEntry] = []
+        let calendar = Calendar.current
+        let today = Date()
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+        let cityName = WidgetPrayerTimesHelper.cityName
 
-        let shared = UserDefaults(suiteName: "group.com.Abduelhamit.PrayerTracker")
-        let cityName = shared?.string(forKey: "widgetCityName") ?? "-"
+        // Dynamisch aus dem Monats-Array nachschlagen
+        let todayTimes = WidgetPrayerTimesHelper.times(for: today)
+        let tomorrowTimes = WidgetPrayerTimesHelper.times(for: tomorrow)
 
-        guard let data = shared?.data(forKey: "widgetPrayerTimes"),
-              let times = try? JSONDecoder().decode(PrayerTimes.self, from: data) else {
-            let entry = AllPrayerTimesEntry(date: Date(), times: .placeholder, location: cityName, currentPrayer: nil)
+        guard let times = todayTimes else {
+            let entry = AllPrayerTimesEntry(date: today, times: .placeholder, location: cityName, currentPrayer: nil)
             return Timeline(entries: [entry], policy: .atEnd)
         }
 
-        // Für jedes Gebet einen Entry: Gebet bleibt markiert bis das nächste beginnt
-        let prayers = [
+        // --- Heute ---
+        let todayPrayers = [
             (id: "fajr", time: times.fajr),
             (id: "dhuhr", time: times.dhuhr),
             (id: "asr", time: times.asr),
@@ -51,8 +50,8 @@ struct AllPrayerTimesProvider: AppIntentTimelineProvider {
             (id: "isha", time: times.isha)
         ]
 
-        for prayer in prayers {
-            if let startDate = dateFromTimeString(prayer.time) {
+        for prayer in todayPrayers {
+            if let startDate = WidgetPrayerTimesHelper.dateFromTimeString(prayer.time, on: today) {
                 entries.append(AllPrayerTimesEntry(
                     date: startDate,
                     times: times, location: cityName, currentPrayer: prayer.id
@@ -60,22 +59,27 @@ struct AllPrayerTimesProvider: AppIntentTimelineProvider {
             }
         }
 
-        return Timeline(entries: entries, policy: .atEnd)
-    }
+        // --- Morgen (damit Widget auch nach Tageswechsel korrekt ist) ---
+        if let tomorrowTimes {
+            let tomorrowPrayers = [
+                (id: "fajr", time: tomorrowTimes.fajr),
+                (id: "dhuhr", time: tomorrowTimes.dhuhr),
+                (id: "asr", time: tomorrowTimes.asr),
+                (id: "maghrib", time: tomorrowTimes.maghrib),
+                (id: "isha", time: tomorrowTimes.isha)
+            ]
 
-    func dateFromTimeString(_ time: String) -> Date? {
-        let components = time.split(separator: ":")
-        guard components.count == 2,
-              let hour = Int(components[0]),
-              let minute = Int(components[1]) else {
-            return nil
+            for prayer in tomorrowPrayers {
+                if let startDate = WidgetPrayerTimesHelper.dateFromTimeString(prayer.time, on: tomorrow) {
+                    entries.append(AllPrayerTimesEntry(
+                        date: startDate,
+                        times: tomorrowTimes, location: cityName, currentPrayer: prayer.id
+                    ))
+                }
+            }
         }
-        let calendar = Calendar.current
-        var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
-        dateComponents.hour = hour
-        dateComponents.minute = minute
-        dateComponents.second = 0
-        return calendar.date(from: dateComponents)
+
+        return Timeline(entries: entries, policy: .atEnd)
     }
 }
 

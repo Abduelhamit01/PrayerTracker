@@ -67,6 +67,13 @@
 			);
 			target = F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */;
 		};
+		F0A8D21E2F3BC07600B2003A /* Exceptions for "PrayerTracker" folder in "PrayerTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F0D242ED2ED46156003CB2D9 /* PrayerTracker */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -81,6 +88,7 @@
 		F0D242F02ED46156003CB2D9 /* PrayerTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				F0A8D21E2F3BC07600B2003A /* Exceptions for "PrayerTracker" folder in "PrayerTracker" target */,
 				F00C08892F37A122003624C4 /* Exceptions for "PrayerTracker" folder in "NextPrayerWidgetExtension" target */,
 			);
 			path = PrayerTracker;
@@ -277,7 +285,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = NextPrayerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NextPrayerWidget/Info.plist;
@@ -309,7 +317,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = NextPrayerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NextPrayerWidget/Info.plist;
@@ -465,7 +473,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = PrayerTracker/PrayerTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -507,7 +515,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = PrayerTracker/PrayerTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
