@@ -115,7 +115,7 @@ struct NextPrayerWidgetEntryView : View {
                 AccessoryWidgetBackground()
                     .opacity(0.7)
                 VStack(spacing: 2) {
-                    Text(entry.prayerName)
+                    Text(LocalizedStringKey(entry.prayerName))
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
                     Text(entry.prayerTime, style: .timer)
@@ -129,7 +129,7 @@ struct NextPrayerWidgetEntryView : View {
                 .font(.system(.footnote, design: .rounded, weight: .semibold))
                 .textCase(.uppercase)
             Spacer()
-            Text("Until \(entry.prayerName)")
+            Text("until_time \(String(localized: String.LocalizationValue(entry.prayerName)))")
                 .font(.system(.body, design: .rounded, weight: .medium))
             Text(entry.prayerTime, style: .timer)
                 .font(.system(.title, design: .rounded, weight: .bold))

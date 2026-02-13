@@ -59,6 +59,22 @@ struct AllPrayerTimesProvider: AppIntentTimelineProvider {
             }
         }
 
+        // --- Mitternacht: Tageswechsel → morgen-Zeiten zeigen ---
+        if let tomorrowTimes {
+            var midnightComponents = calendar.dateComponents([.year, .month, .day], from: tomorrow)
+            midnightComponents.hour = 0
+            midnightComponents.minute = 0
+            midnightComponents.second = 0
+            if let midnight = calendar.date(from: midnightComponents) {
+                entries.append(AllPrayerTimesEntry(
+                    date: midnight,
+                    times: tomorrowTimes,
+                    location: cityName,
+                    currentPrayer: nil
+                ))
+            }
+        }
+
         // --- Morgen (damit Widget auch nach Tageswechsel korrekt ist) ---
         if let tomorrowTimes {
             let tomorrowPrayers = [
@@ -99,24 +115,24 @@ struct AllPrayerTimesWidgetEntryView : View {
                 .padding(.top)
             Spacer()
             VStack(spacing: 4) {
-                prayerRow(icon: "sunrise.fill", id: "fajr", name: "Fajr", time: entry.times?.fajr)
-                prayerRow(icon: "sun.max.fill", id: "dhuhr", name: "Dhuhr", time: entry.times?.dhuhr)
-                prayerRow(icon: "sun.min.fill", id: "asr", name: "Asr", time: entry.times?.asr)
-                prayerRow(icon: "sunset.fill", id: "maghrib", name: "Maghrib", time: entry.times?.maghrib)
-                prayerRow(icon: "moon.stars.fill", id: "isha", name: "Isha", time: entry.times?.isha)
+                prayerRow(icon: "sunrise.fill", id: "fajr", time: entry.times?.fajr)
+                prayerRow(icon: "sun.max.fill", id: "dhuhr", time: entry.times?.dhuhr)
+                prayerRow(icon: "sun.min.fill", id: "asr", time: entry.times?.asr)
+                prayerRow(icon: "sunset.fill", id: "maghrib", time: entry.times?.maghrib)
+                prayerRow(icon: "moon.stars.fill", id: "isha", time: entry.times?.isha)
             }
             .padding(.bottom)
         }
         .dynamicTypeSize(...DynamicTypeSize.large)
     }
 
-    private func prayerRow(icon: String, id: String, name: String, time: String?) -> some View {
+    private func prayerRow(icon: String, id: String, time: String?) -> some View {
         let isCurrent = entry.currentPrayer == id
         return HStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.caption2)
                 .frame(width: 14)
-            Text(name)
+            Text(LocalizedStringKey(id))
                 .font(.system(.caption, design: .rounded, weight: isCurrent ? .bold : .medium))
             Spacer()
             Text(time ?? "-")

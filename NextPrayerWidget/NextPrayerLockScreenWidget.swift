@@ -100,7 +100,7 @@ struct NextPrayerLockScreenEntryView : View {
             AccessoryWidgetBackground()
                 .opacity(0.7)
             VStack(spacing: 2) {
-                Text(entry.prayer)
+                Text(LocalizedStringKey(entry.prayer))
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .multilineTextAlignment(.center)
                 Text(entry.prayerTime, style: .time)

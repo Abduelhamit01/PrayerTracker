@@ -75,6 +75,16 @@ extension View {
     }
 }
 
+struct GlassButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.buttonStyle(.glass)
+        } else {
+            content
+        }
+    }
+}
+
 struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @StateObject private var ramadanManager = RamadanManager()
@@ -233,7 +243,7 @@ struct ContentView: View {
                         manager.selectedDate = Date()
                     }
                 }
-                .buttonStyle(.glass)
+                .modifier(GlassButtonModifier())
             }
         }
 
