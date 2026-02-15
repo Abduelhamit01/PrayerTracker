@@ -31,9 +31,7 @@ struct WhatsNewView: View {
 
             // Features
             VStack(alignment: .leading, spacing: 16) {
-                FeatureRow(icon: "square.grid.2x2.fill", text: "whats_new_widget")
-                FeatureRow(icon: "lock.fill", text: "whats_new_lockscreen")
-                FeatureRow(icon: "location.fill", text: "whats_new_reselect_location")
+                FeatureRow(icon: "arrow.up.circle.fill", text: "whats_new_qibla")
             }
             .padding(20)
             .background(cardBackground)

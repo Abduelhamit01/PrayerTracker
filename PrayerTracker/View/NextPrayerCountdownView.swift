@@ -90,7 +90,7 @@ struct NextPrayerCountdownView: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.islamicGreen)
                     }
-
+                    
                     Text(formattedTime(info.remaining))
                         .font(.system(size: 52, weight: .bold, design: .rounded))
                         .monospacedDigit()

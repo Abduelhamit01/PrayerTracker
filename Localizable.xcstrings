@@ -105,6 +105,7 @@
       }
     },
     "Clear all completions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -149,6 +150,7 @@
       }
     },
     "Complete all Prayers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1804,161 +1806,24 @@
         }
       }
     },
-    "whats_new_feature_1" : {
-      "extractionState" : "stale",
+    "whats_new_qibla" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ramadan-Modus mit Mondphasen"
+            "value" : "Qibla-Kompass — finde die Gebetsrichtung"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ramadan mode with moon phases"
+            "value" : "Qibla compass — find the prayer direction"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ay evreleri ile Ramazan modu"
-          }
-        }
-      }
-    },
-    "whats_new_feature_2" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einrichtungs-Assistent für neue Benutzer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Setup assistant for new users"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yeni kullanıcılar için kurulum asistanı"
-          }
-        }
-      }
-    },
-    "whats_new_feature_3" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Echte Gebetszeiten von Diyanet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Real prayer times from Diyanet"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diyanet'ten gerçek namaz vakitleri"
-          }
-        }
-      }
-    },
-    "whats_new_feature_4" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Benachrichtigungen zur Gebetszeit"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notifications at prayer time"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Namaz vaktinde bildirimler"
-          }
-        }
-      }
-    },
-    "whats_new_feature_5" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standort-Auswahl (Land/Stadt)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location selection (Country/City)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konum seçimi (Ülke/Şehir)"
-          }
-        }
-      }
-    },
-    "whats_new_lockscreen" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets für den Sperrbildschirm"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets for the lock screen"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kilit ekranı için widget'lar"
-          }
-        }
-      }
-    },
-    "whats_new_reselect_location" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bitte wähle deinen Standort erneut, damit die Widgets sich aktualisieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please reselect your location so the widgets can update"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget'ların güncellenmesi için lütfen konumunuzu tekrar seçin"
+            "value" : "Kıble pusulası — namaz yönünü bul"
           }
         }
       }
@@ -1981,28 +1846,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anladım"
-          }
-        }
-      }
-    },
-    "whats_new_widget" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets für den Homebildschirm"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widgets for the home screen"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ana ekran için widget'lar"
           }
         }
       }

@@ -89,11 +89,13 @@ struct ContentView: View {
     @StateObject private var manager = PrayerManager()
     @StateObject private var ramadanManager = RamadanManager()
     @StateObject private var prayerTimeManager = PrayerTimeManager()
+    @StateObject private var qiblaManager = QiblaManager()
     @State private var trigger: Int = 0
     @State private var selectedTab: Int = 0
     @State private var showSettings: Bool = false
     @State private var showWhatsNew: Bool = false
     @State private var showOnboarding: Bool = false
+    
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("ramadanModeEnabled") private var ramadanMode: Bool = false
 
@@ -142,10 +144,8 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     WeekView(manager: manager)
-                    
                     NextPrayerCountdownView(prayerTimeManager: prayerTimeManager)
                         .padding(.top, 4)
-
                     // Use GlassEffectContainer for prayer cards on iOS 26+
                     if #available(iOS 26.0, *) {
                         GlassEffectContainer(spacing: 12) {
@@ -157,6 +157,9 @@ struct ContentView: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 20)
+            }
+            .onAppear {
+                qiblaManager.start()
             }
             .contentMargins(.top, -10, for: .scrollContent)
             .background(Color(.systemGroupedBackground))
@@ -282,26 +285,7 @@ struct ContentView: View {
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
-            Menu {
-                Button {
-                    manager.completeAllPrayers()
-                } label: {
-                    Label("Complete all Prayers", systemImage: "checkmark.circle.fill")
-                }
-
-                Button(role: .destructive) {
-                    manager.clearAllCompletions()
-                } label: {
-                    Label("Clear all completions", systemImage: "trash")
-                }
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .frame(width: 36, height: 36)
-                    .liquidGlass(in: Circle(), interactive: true)
-            }
-            .buttonStyle(.plain)
+            QiblaView(qiblaManager: QiblaManager(), size: 12)
         }
     }
 
