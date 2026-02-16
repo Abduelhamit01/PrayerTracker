@@ -111,7 +111,7 @@ class PrayerTimeManager: ObservableObject {
                     self.tomorrowTimes = tomorrowLookup
                 }
                 updateWidgetDefaults(today: todayLookup, tomorrow: tomorrowLookup)
-                await scheduleNotificationsIfEnabled(times: todayLookup)
+                await scheduleNotificationsIfEnabled(monthlyTimes: cached)
 
                 // Monatsgrenze: morgen ist neuer Monat aber nicht im Cache
                 if tomorrowLookup == nil {
@@ -142,7 +142,7 @@ class PrayerTimeManager: ObservableObject {
 
             if let todayLookup {
                 updateWidgetDefaults(today: todayLookup, tomorrow: tomorrowLookup)
-                await scheduleNotificationsIfEnabled(times: todayLookup)
+                await scheduleNotificationsIfEnabled(monthlyTimes: monthlyTimes)
             }
 
             // Monatsgrenze: morgen ist neuer Monat
@@ -284,6 +284,11 @@ class PrayerTimeManager: ObservableObject {
     /// Öffentliche Methode zum Speichern des Standorts (für Onboarding)
     func saveLocationPublic() {
         saveLocation()
+    }
+
+    /// Gibt die gecachten Monatsdaten zurück (für Benachrichtigungen)
+    func getCachedMonthlyTimes() -> [PrayerTimes] {
+        loadMonthlyTimesFromDefaults()
     }
 
     /// Gibt die Zeit für ein Gebet zurück
@@ -493,12 +498,12 @@ class PrayerTimeManager: ObservableObject {
         return priority + rest
     }
 
-    /// Plant Benachrichtigungen wenn sie aktiviert sind
-    private func scheduleNotificationsIfEnabled(times: PrayerTimes) async {
+    /// Plant Benachrichtigungen wenn sie aktiviert sind (bis zu 12 Tage voraus)
+    private func scheduleNotificationsIfEnabled(monthlyTimes: [PrayerTimes]) async {
         let enabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
         guard enabled, let cityName = selectedCity?.name else { return }
 
-        await PrayerNotificationManager.shared.scheduleNotifications(for: times, cityName: cityName)
+        await PrayerNotificationManager.shared.scheduleNotifications(monthlyTimes: monthlyTimes, cityName: cityName)
     }
 }
 

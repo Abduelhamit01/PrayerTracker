@@ -187,10 +187,11 @@ struct SettingsView: View {
             // Berechtigung anfordern
             let granted = await notificationManager.requestAuthorization()
             if granted {
-                // Benachrichtigungen planen wenn Zeiten vorhanden
-                if let times = prayerTimeManager.todaysTimes,
+                // Benachrichtigungen planen wenn Monatsdaten vorhanden
+                let monthlyTimes = prayerTimeManager.getCachedMonthlyTimes()
+                if !monthlyTimes.isEmpty,
                    let cityName = prayerTimeManager.selectedCity?.name {
-                    await notificationManager.scheduleNotifications(for: times, cityName: cityName)
+                    await notificationManager.scheduleNotifications(monthlyTimes: monthlyTimes, cityName: cityName)
                 }
             } else {
                 // Berechtigung verweigert - Toggle zurücksetzen

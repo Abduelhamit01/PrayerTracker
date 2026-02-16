@@ -17,6 +17,12 @@ class PrayerNotificationManager: ObservableObject {
 
     private let center = UNUserNotificationCenter.current()
 
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
+
     private init() {
         Task {
             await checkAuthorizationStatus()
@@ -49,60 +55,71 @@ class PrayerNotificationManager: ObservableObject {
 
     // MARK: - Schedule Notifications
 
-    /// Plant Benachrichtigungen für alle Gebetszeiten
-    func scheduleNotifications(for times: PrayerTimes, cityName: String) async {
-        // Erst alle alten Benachrichtigungen löschen
+    /// Plant Benachrichtigungen für bis zu 12 Tage voraus (max 60 Notifications, iOS-Limit 64)
+    func scheduleNotifications(monthlyTimes: [PrayerTimes], cityName: String) async {
         await cancelAllNotifications()
 
-        // Status frisch prüfen (nicht gecachten Wert nutzen)
         await checkAuthorizationStatus()
-
         guard isAuthorized else {
             print("Notifications not authorized")
             return
         }
 
-        let prayers: [(id: String, name: String, time: String)] = [
-            ("fajr", String(localized: "fajr"), times.fajr),
-            ("dhuhr", String(localized: "dhuhr"), times.dhuhr),
-            ("asr", String(localized: "asr"), times.asr),
-            ("maghrib", String(localized: "maghrib"), times.maghrib),
-            ("isha", String(localized: "isha"), times.isha)
-        ]
+        let calendar = Calendar.current
+        let now = Date()
 
-        for prayer in prayers {
-            await scheduleNotification(
-                id: prayer.id,
-                prayerName: prayer.name,
-                time: prayer.time,
-                cityName: cityName
-            )
+        for dayOffset in 0..<12 {
+            guard let targetDate = calendar.date(byAdding: .day, value: dayOffset, to: now) else { continue }
+            let dateString = dateFormatter.string(from: targetDate)
+
+            guard let dayTimes = monthlyTimes.first(where: { $0.gregorianDateShort == dateString }) else { continue }
+
+            let prayers: [(id: String, name: String, time: String)] = [
+                ("fajr", String(localized: "fajr"), dayTimes.fajr),
+                ("dhuhr", String(localized: "dhuhr"), dayTimes.dhuhr),
+                ("asr", String(localized: "asr"), dayTimes.asr),
+                ("maghrib", String(localized: "maghrib"), dayTimes.maghrib),
+                ("isha", String(localized: "isha"), dayTimes.isha)
+            ]
+
+            for prayer in prayers {
+                await scheduleNotification(
+                    id: prayer.id,
+                    prayerName: prayer.name,
+                    time: prayer.time,
+                    date: targetDate
+                )
+            }
         }
     }
 
-    /// Plant eine einzelne Benachrichtigung
-    private func scheduleNotification(id: String, prayerName: String, time: String, cityName: String) async {
+    /// Plant eine einzelne Benachrichtigung mit exaktem Datum
+    private func scheduleNotification(id: String, prayerName: String, time: String, date: Date) async {
         guard let (hour, minute) = parseTime(time) else {
             print("Could not parse time: \(time)")
             return
         }
 
+        let calendar = Calendar.current
+        guard let fireDate = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: date),
+              fireDate > Date() else {
+            return // Vergangene Zeiten überspringen
+        }
+
         let content = UNMutableNotificationContent()
         content.title = String(localized: "prayer_time_notification_title")
-        content.body = String(localized: "\(prayerName)", comment: "Prayer notification body")
+        content.body = prayerName // Bereits lokalisiert
         content.sound = .default
         content.categoryIdentifier = "PRAYER_TIME"
+        content.interruptionLevel = .timeSensitive
 
-        // Trigger für heute zur angegebenen Uhrzeit
-        var dateComponents = DateComponents()
-        dateComponents.hour = hour
-        dateComponents.minute = minute
-        dateComponents.second = 0
+        // Volle DateComponents für exakte Zustellung (kein iOS-Batching)
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: fireDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
+        let dayString = dateFormatter.string(from: date)
         let request = UNNotificationRequest(
-            identifier: "prayer_\(id)",
+            identifier: "prayer_\(id)_\(dayString)",
             content: content,
             trigger: trigger
         )
