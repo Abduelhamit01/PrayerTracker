@@ -27,6 +27,7 @@ struct QiblaView: View {
                     .inset(by: 2) // kleiner Puffer, z.B. 2pt
                     .trim(from: 0, to: qiblaManager.progress)
                     .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .animation(.smooth(duration: 0.3), value: qiblaManager.progress)
                     .rotationEffect(.degrees(-90))
                     .frame(width: glassDiameter, height: glassDiameter)
                     .foregroundStyle(.islamicGreen)
@@ -50,6 +51,7 @@ struct QiblaView: View {
                     .font(.system(size: size * 1.4, weight: .bold, design: .rounded))
                     .foregroundStyle(qiblaManager.lookingToMekkah ? .white : .islamicGreen)
                     .rotationEffect(Angle(degrees: qiblaManager.winkelPfeil))
+                    .animation(.smooth(duration: 0.3), value: qiblaManager.winkelPfeil)
                     .sensoryFeedback(.success, trigger: qiblaManager.lookingToMekkah)
             }
         }

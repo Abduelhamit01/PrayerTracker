@@ -285,7 +285,7 @@ struct ContentView: View {
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
-            QiblaView(qiblaManager: QiblaManager(), size: 12)
+            QiblaView(qiblaManager: qiblaManager, size: 12)
         }
     }
 

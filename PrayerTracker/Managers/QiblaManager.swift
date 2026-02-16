@@ -47,27 +47,38 @@ class QiblaManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        //guard let weil standort ja auch ein Nil liefern kann, wenn es keinen Standort empfangen kann
-        guard let standort else {
-            return
-        }
+        guard let standort else { return }
         if newHeading.trueHeading >= 0 {
-            winkelPfeil = qiblaBearing(from: standort.coordinate) - newHeading.trueHeading
-            winkelPfeil = (winkelPfeil + 360).truncatingRemainder(dividingBy: 360)
-            if winkelPfeil < 3 ||  winkelPfeil > 357 {
+            // Zielwinkel 0-360°
+            var zielWinkel = qiblaBearing(from: standort.coordinate) - newHeading.trueHeading
+            zielWinkel = (zielWinkel + 360).truncatingRemainder(dividingBy: 360)
+
+            // Kürzestes Delta berechnen (vermeidet 360°-Sprung)
+            let aktuellerWinkelNormalisiert = (winkelPfeil.truncatingRemainder(dividingBy: 360) +
+    360).truncatingRemainder(dividingBy: 360)
+            var delta = zielWinkel - aktuellerWinkelNormalisiert
+            if delta > 180 { delta -= 360 }
+            if delta < -180 { delta += 360 }
+
+            // Rauschen filtern
+            guard abs(delta) > 1.0 else { return }
+
+            winkelPfeil += delta
+
+            // lookingToMekkah braucht den normalisierten Wert
+            if zielWinkel < 5 || zielWinkel > 355 {
                 lookingToMekkah = true
             } else {
                 lookingToMekkah = false
             }
-            
-            if winkelPfeil <= 180 {
-                progress = 1 - (winkelPfeil / 180)
+
+            if zielWinkel <= 180 {
+                progress = 1 - (zielWinkel / 180)
             } else {
-                 progress = 1 - ((360 - winkelPfeil) / 180)
+                progress = 1 - ((360 - zielWinkel) / 180)
             }
         }
     }
-    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         standort = locations.last
     }

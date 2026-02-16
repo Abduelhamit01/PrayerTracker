@@ -20,6 +20,11 @@ struct NextPrayerCountdownView: View {
     private var tomorrowFajrTime: String? {
         prayerTimeManager.tomorrowTimes?.fajr
     }
+    
+    ///Morgige Sunrise-Zeit direkt vom Manager
+    private var tomorrowSunriseTime: String? {
+        prayerTimeManager.tomorrowTimes?.sunrise
+    }
 
     /// Ob wir nach Isha sind und auf Fajr von morgen warten
     private var isAfterIsha: Bool {
@@ -103,26 +108,39 @@ struct NextPrayerCountdownView: View {
                         )
 
                     if info.id == "fajr" {
-                        if isAfterIsha, let tomorrowFajr = tomorrowFajrTime {
-                            // Nach Isha: morgige Fajr-Uhrzeit anzeigen
-                            HStack(spacing: 4) {
-                                Image(systemName: "sunrise")
-                                    .font(.system(size: 11))
-                                Text(String(localized: "fajr_at \(tomorrowFajr)"))
-                                    .font(.system(size: 12, weight: .medium))
+                        VStack {
+                            if isAfterIsha, let tomorrowFajr = tomorrowFajrTime {
+                                // Nach Isha: morgige Fajr-Uhrzeit anzeigen
+                                HStack(spacing: 4) {
+                                    Image(systemName: "sunrise")
+                                        .font(.system(size: 11))
+                                    Text(String(localized: "fajr_at \(tomorrowFajr)"))
+                                        .font(.system(size: 12, weight: .medium))
+                                }
+                                .foregroundStyle(.secondary.opacity(0.8))
+                                .padding(.top, 4)
+                                
+                                HStack(spacing: 4) {
+                                    if let tomorrowSunrise = tomorrowSunriseTime {
+                                        Image(systemName: "sunrise")
+                                            .font(.system(size: 11))
+                                        Text(String(localized: "sunrise_at \(tomorrowSunrise)"))
+                                            .font(.system(size: 12, weight: .medium))
+                                    }
+                                }
+                                .foregroundStyle(.secondary.opacity(0.8))
+                                .padding(.top, 4)
+                            } else if !isAfterIsha, let sunrise = prayerTimeManager.todaysTimes?.sunrise {
+                                // Vor Fajr (morgens): Sunrise-Zeit anzeigen
+                                HStack(spacing: 4) {
+                                    Image(systemName: "sun.horizon.fill")
+                                        .font(.system(size: 11))
+                                    Text(String(localized: "sunrise_at \(sunrise)"))
+                                        .font(.system(size: 12, weight: .medium))
+                                }
+                                .foregroundStyle(.secondary.opacity(0.8))
+                                .padding(.top, 4)
                             }
-                            .foregroundStyle(.secondary.opacity(0.8))
-                            .padding(.top, 4)
-                        } else if !isAfterIsha, let sunrise = prayerTimeManager.todaysTimes?.sunrise {
-                            // Vor Fajr (morgens): Sunrise-Zeit anzeigen
-                            HStack(spacing: 4) {
-                                Image(systemName: "sun.horizon.fill")
-                                    .font(.system(size: 11))
-                                Text(String(localized: "sunrise_at \(sunrise)"))
-                                    .font(.system(size: 12, weight: .medium))
-                            }
-                            .foregroundStyle(.secondary.opacity(0.8))
-                            .padding(.top, 4)
                         }
                     }
                 }
