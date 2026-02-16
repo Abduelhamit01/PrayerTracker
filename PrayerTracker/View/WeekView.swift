@@ -13,7 +13,7 @@ struct WeekView: View {
 
     @State var position = ScrollPosition(id: "current")
     @State private var monatsString: String = ""
-
+    @State private var showHijri = false
 
     // Hilfseigenschaften für den Kalender
     private var calendar: Calendar {
@@ -52,7 +52,20 @@ struct WeekView: View {
             monatsString = formatter.string(from: donnerstag)
         }
     }
+    
+    func hijriDateString() -> String {
+        let hijriCalendar = Calendar(identifier: .islamic)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MMMM.yyyy"
+        dateFormatter.locale = Locale(identifier: "de")
+        dateFormatter.calendar = hijriCalendar
+        let hijriString = dateFormatter.string(from: Date())
+        
+        return hijriString
+    }
+    
 
+    
     var body: some View {
         VStack(spacing: 12) {
             // Month Display with Glass Effect
@@ -60,8 +73,12 @@ struct WeekView: View {
                 Image(systemName: "calendar")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
-                
-                Text("\(monatsString)")
+                Text(showHijri ? hijriDateString() : monatsString)
+                    .onTapGesture {
+                        withAnimation(.bouncy){
+                            showHijri.toggle()
+                        }
+                    }
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
                     .textCase(.uppercase)
@@ -75,7 +92,6 @@ struct WeekView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(.primary.opacity(0.12), lineWidth: 1)
             )
-
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
                     ForEach(-52...52, id: \.self) { weekOffset in

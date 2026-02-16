@@ -7,28 +7,106 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F00C086F2F378C42003624C4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F00C086E2F378C42003624C4 /* WidgetKit.framework */; };
+		F00C08712F378C42003624C4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F00C08702F378C42003624C4 /* SwiftUI.framework */; };
+		F00C08822F378C42003624C4 /* NextPrayerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F00C086C2F378C42003624C4 /* NextPrayerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F02BAAA92F1D09C7008C0870 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */; };
 		F02BAAAB2F1D0B3D008C0870 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */; };
+		F02BAAAC2F1D0B3D008C0870 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */; };
 		F063448F2ED6586D00584F06 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F063448E2ED6586900584F06 /* .gitignore */; };
 		F06344A42EE4126A00584F06 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F06344A32EE4126A00584F06 /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		F00C08802F378C42003624C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0D242E62ED46156003CB2D9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F00C086B2F378C42003624C4;
+			remoteInfo = NextPrayerWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F00C08872F378C42003624C4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F00C08822F378C42003624C4 /* NextPrayerWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		F00C086C2F378C42003624C4 /* NextPrayerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NextPrayerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00C086E2F378C42003624C4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		F00C08702F378C42003624C4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		F00C088B2F37AEF4003624C4 /* NextPrayerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NextPrayerWidgetExtension.entitlements; sourceTree = "<group>"; };
 		F02BAA722F1C0A70008C0870 /* PrayerTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrayerTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		F063448E2ED6586900584F06 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F00C08832F378C42003624C4 /* Exceptions for "NextPrayerWidget" folder in "NextPrayerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */;
+		};
+		F00C08892F37A122003624C4 /* Exceptions for "PrayerTracker" folder in "NextPrayerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/PrayerTime.swift,
+				View/Prayer/Prayer.swift,
+			);
+			target = F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */;
+		};
+		F0A8D21E2F3BC07600B2003A /* Exceptions for "PrayerTracker" folder in "PrayerTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F0D242ED2ED46156003CB2D9 /* PrayerTracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		F00C08722F378C42003624C4 /* NextPrayerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F00C08832F378C42003624C4 /* Exceptions for "NextPrayerWidget" folder in "NextPrayerWidgetExtension" target */,
+			);
+			path = NextPrayerWidget;
+			sourceTree = "<group>";
+		};
 		F0D242F02ED46156003CB2D9 /* PrayerTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F0A8D21E2F3BC07600B2003A /* Exceptions for "PrayerTracker" folder in "PrayerTracker" target */,
+				F00C08892F37A122003624C4 /* Exceptions for "PrayerTracker" folder in "NextPrayerWidgetExtension" target */,
+			);
 			path = PrayerTracker;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F00C08692F378C42003624C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F00C08712F378C42003624C4 /* SwiftUI.framework in Frameworks */,
+				F00C086F2F378C42003624C4 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0D242EB2ED46156003CB2D9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -40,20 +118,55 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F00C086D2F378C42003624C4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F00C086E2F378C42003624C4 /* WidgetKit.framework */,
+				F00C08702F378C42003624C4 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F0D242E52ED46156003CB2D9 = {
 			isa = PBXGroup;
 			children = (
+				F00C088B2F37AEF4003624C4 /* NextPrayerWidgetExtension.entitlements */,
 				F063448E2ED6586900584F06 /* .gitignore */,
 				F0D242F02ED46156003CB2D9 /* PrayerTracker */,
 				F02BAA722F1C0A70008C0870 /* PrayerTracker.app */,
 				F02BAAA82F1D09C7008C0870 /* PrivacyInfo.xcprivacy */,
 				F02BAAAA2F1D0B3D008C0870 /* Localizable.xcstrings */,
+				F00C086C2F378C42003624C4 /* NextPrayerWidgetExtension.appex */,
+				F00C08722F378C42003624C4 /* NextPrayerWidget */,
+				F00C086D2F378C42003624C4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F00C08842F378C42003624C4 /* Build configuration list for PBXNativeTarget "NextPrayerWidgetExtension" */;
+			buildPhases = (
+				F00C08682F378C42003624C4 /* Sources */,
+				F00C08692F378C42003624C4 /* Frameworks */,
+				F00C086A2F378C42003624C4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F00C08722F378C42003624C4 /* NextPrayerWidget */,
+			);
+			name = NextPrayerWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = NextPrayerWidgetExtension;
+			productReference = F00C086C2F378C42003624C4 /* NextPrayerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F0D242ED2ED46156003CB2D9 /* PrayerTracker */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0D242F92ED46157003CB2D9 /* Build configuration list for PBXNativeTarget "PrayerTracker" */;
@@ -61,10 +174,12 @@
 				F0D242EA2ED46156003CB2D9 /* Sources */,
 				F0D242EB2ED46156003CB2D9 /* Frameworks */,
 				F0D242EC2ED46156003CB2D9 /* Resources */,
+				F00C08872F378C42003624C4 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F00C08812F378C42003624C4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				F0D242F02ED46156003CB2D9 /* PrayerTracker */,
@@ -84,9 +199,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2610;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
+					F00C086B2F378C42003624C4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					F0D242ED2ED46156003CB2D9 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
@@ -110,11 +228,20 @@
 			projectRoot = "";
 			targets = (
 				F0D242ED2ED46156003CB2D9 /* PrayerTracker */,
+				F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F00C086A2F378C42003624C4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F02BAAAC2F1D0B3D008C0870 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0D242EC2ED46156003CB2D9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -128,6 +255,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F00C08682F378C42003624C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0D242EA2ED46156003CB2D9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,7 +271,79 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		F00C08812F378C42003624C4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F00C086B2F378C42003624C4 /* NextPrayerWidgetExtension */;
+			targetProxy = F00C08802F378C42003624C4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		F00C08852F378C42003624C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = NextPrayerWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = V3QYFUYK7A;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NextPrayerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NextPrayerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Abduelhamit.PrayerTracker.NextPrayerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F00C08862F378C42003624C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = NextPrayerWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = V3QYFUYK7A;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NextPrayerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NextPrayerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Abduelhamit.PrayerTracker.NextPrayerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		F0D242F72ED46157003CB2D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -267,8 +473,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = PrayerTrackerIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = PrayerTracker/PrayerTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -280,12 +487,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Abduelhamit.PrayerTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -308,8 +515,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = PrayerTrackerIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = PrayerTracker/PrayerTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = V3QYFUYK7A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -321,12 +529,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Abduelhamit.PrayerTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -346,6 +554,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F00C08842F378C42003624C4 /* Build configuration list for PBXNativeTarget "NextPrayerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F00C08852F378C42003624C4 /* Debug */,
+				F00C08862F378C42003624C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F0D242E92ED46156003CB2D9 /* Build configuration list for PBXProject "PrayerTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
