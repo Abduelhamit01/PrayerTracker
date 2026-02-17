@@ -268,10 +268,11 @@ struct OnboardingView: View {
             UserDefaults.standard.set(true, forKey: "notificationsEnabled")
 
             // Sofort Benachrichtigungen planen (falls Standort gewählt)
-            if let times = prayerTimeManager.todaysTimes,
+            let monthlyTimes = prayerTimeManager.getCachedMonthlyTimes()
+            if !monthlyTimes.isEmpty,
                let cityName = prayerTimeManager.selectedCity?.name {
                 await PrayerNotificationManager.shared.scheduleNotifications(
-                    for: times,
+                    monthlyTimes: monthlyTimes,
                     cityName: cityName
                 )
             }
