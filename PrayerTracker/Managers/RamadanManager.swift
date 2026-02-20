@@ -64,6 +64,12 @@ class RamadanManager: ObservableObject {
     private func dateKey(for date: Date) -> String {
         dateFormatter.string(from: date)
     }
+    
+    func notOnlyToday(for date: Date) {
+        completedDays.insert(dateKey(for: date))
+        save()
+        objectWillChange.send()
+    }
 
     var todayKey: String {
         dateKey(for: Date())
@@ -90,7 +96,6 @@ class RamadanManager: ObservableObject {
         let end = Calendar.current.startOfDay(for: ramadanEnd)
         return today >= start && today <= end
     }
-
 
     func refresh() {
         objectWillChange.send()

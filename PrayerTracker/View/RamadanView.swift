@@ -17,6 +17,7 @@ struct RamadanView: View {
 
     @State private var dragOffset: CGFloat = 0
     @State private var confettiTrigger: Int = 0
+    @State private var selectedDate: Date?
 
     private let sliderWidth: CGFloat = 300
     private let knobSize: CGFloat = 50
@@ -114,7 +115,20 @@ struct RamadanView: View {
                 RamadanTimelineView(
                     currentDay: ramadanManager.isRamadanActive ? ramadanManager.currentDay : 0,
                     completedDays: ramadanManager.completedDays,
-                    ramadanStart: ramadanManager.ramadanStart
+                    ramadanStart: ramadanManager.ramadanStart,
+                    onDayTapped: { date in
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            // Wenn der gleiche Tag nochmal getippt wird → Auswahl aufheben
+                            if let current = selectedDate, Calendar.current.isDate(current, inSameDayAs: date) {
+                                selectedDate = nil
+                            } else {
+                                selectedDate = date
+                            }
+                            dragOffset = 0
+                        }
+                    },
+                    selectedDate: selectedDate,
+                    ramadanManager: ramadanManager
                 )
                 .padding(.vertical, 10)
 
@@ -199,7 +213,7 @@ struct RamadanView: View {
                 Text("\(ramadanManager.completedDays.count)/\(ramadanManager.totalDays)")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundColor(moonColor)
-                    .offset(y: 70)
+                    .offset(y: 60)
             }
         }
     }
@@ -235,9 +249,34 @@ struct RamadanView: View {
     }
 
     // MARK: - Slider Section
+
+    /// Prüft ob der ausgewählte Tag (oder heute) bereits abgeschlossen ist
+    private var isSelectedDayCompleted: Bool {
+        if let selected = selectedDate {
+            let key = dateKeyFor(selected)
+            return ramadanManager.completedDays.contains(key)
+        }
+        return ramadanManager.todayCompleted
+    }
+
+    /// Berechnet die Tag-Nummer für das ausgewählte Datum
+    private func dayNumberFor(_ date: Date) -> Int {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: ramadanManager.ramadanStart)
+        let target = calendar.startOfDay(for: date)
+        let days = calendar.dateComponents([.day], from: start, to: target).day ?? 0
+        return days + 1
+    }
+
+    private func dateKeyFor(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+
     private var sliderSection: some View {
         VStack(spacing: 16) {
-            if ramadanManager.todayCompleted {
+            if isSelectedDayCompleted {
                 // Completed State
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
@@ -250,23 +289,34 @@ struct RamadanView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(textColor)
 
-                    Button {
-                        withAnimation {
-                            ramadanManager.uncompleteToday()
-                            dragOffset = 0
+                    // Rückgängig-Button nur für heute (nicht für nachgeholte Tage)
+                    if selectedDate == nil {
+                        Button {
+                            withAnimation {
+                                ramadanManager.uncompleteToday()
+                                dragOffset = 0
+                            }
+                        } label: {
+                            Text("Rückgängig")
+                                .font(.caption)
+                                .foregroundColor(islamicGreen)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(islamicGreen.opacity(0.15))
+                                .cornerRadius(20)
                         }
-                    } label: {
-                        Text("Rückgängig")
-                            .font(.caption)
-                            .foregroundColor(islamicGreen)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(islamicGreen.opacity(0.15))
-                            .cornerRadius(20)
+                        .padding(.top, 8)
                     }
-                    .padding(.top, 8)
                 }
             } else {
+                // Label für den ausgewählten Tag
+                if let selected = selectedDate {
+                    Text("Tag \(dayNumberFor(selected)) nachholen")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(textColor.opacity(0.8))
+                }
+
                 // Slider
                 ZStack(alignment: .leading) {
                     // Track
@@ -304,7 +354,7 @@ struct RamadanView: View {
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                             dragOffset = maxOffset
                                         }
-                                        completeToday()
+                                        completeDay()
                                     } else {
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                             dragOffset = 0
@@ -319,10 +369,18 @@ struct RamadanView: View {
 
     // MARK: - Actions
 
-    private func completeToday() {
-        ramadanManager.completeToday()
+    private func completeDay() {
+        if let selected = selectedDate {
+            ramadanManager.notOnlyToday(for: selected)
+            withAnimation {
+                selectedDate = nil
+            }
+        } else {
+            ramadanManager.completeToday()
+        }
         confettiTrigger += 1
         manager.playSuccessSound()
+        dragOffset = 0
     }
 }
 
