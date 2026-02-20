@@ -4,8 +4,9 @@ struct RamadanTimelineView: View {
     // Parameter, die von außen kommen
     let currentDay: Int
     let completedDays: Set<String>
-    let totalDays: Int = 30
+    let totalDays: Int
     let ramadanStart: Date
+    let monthlyTimes: [PrayerTimes]
 
     // Callback wenn ein Tag angetippt wird
     var onDayTapped: ((Date) -> Void)?
@@ -15,6 +16,12 @@ struct RamadanTimelineView: View {
     // Environment für ColorScheme (Hell/Dunkel Modus)
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var ramadanManager: RamadanManager
+
+    private let gregorianFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "dd.MM.yyyy"
+        return f
+    }()
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -26,13 +33,16 @@ struct RamadanTimelineView: View {
                     ForEach(1...totalDays, id: \.self) { day in
                         let dayDate = getDate(for: day)
                         let dayState = getDayState(day: day)
+                        let times = getPrayerTimes(for: dayDate)
 
                         TimelineDayItem(
                             dayNumber: day,
                             date: dayDate,
                             state: dayState,
                             moonIcon: getMoonPhaseIcon(for: day),
-                            isSelected: isSelected(dayDate)
+                            isSelected: isSelected(dayDate),
+                            fajrTime: times?.fajr,
+                            iftarTime: times?.maghrib
                         )
                         .id(day)
                         .onTapGesture {
@@ -55,7 +65,7 @@ struct RamadanTimelineView: View {
                 }
             }
         }
-        .frame(height: 110) // Feste Höhe für die Timeline
+        .frame(height: 150) // Feste Höhe für die Timeline (inkl. Fajr/Iftar)
     }
     
     // MARK: - Logik Helper
@@ -90,6 +100,12 @@ struct RamadanTimelineView: View {
         guard let selected = selectedDate else { return false }
         return Calendar.current.isDate(date, inSameDayAs: selected)
     }
+
+    // Sucht Gebetszeiten für ein Datum aus den gecachten Monatsdaten
+    private func getPrayerTimes(for date: Date) -> PrayerTimes? {
+        let key = gregorianFormatter.string(from: date)
+        return monthlyTimes.first { $0.gregorianDateShort == key }
+    }
     
     // 🌙 PRÄZISE MONDPHASEN-LOGIK 🌙
     // Basiert auf einem 30-Tage Mondzyklus
@@ -121,6 +137,8 @@ struct TimelineDayItem: View {
     let state: DayState
     let moonIcon: String
     var isSelected: Bool = false
+    var fajrTime: String?
+    var iftarTime: String?
 
     // Farben definieren
     private var activeColor: Color { Color("IslamicGreen") }
@@ -128,39 +146,55 @@ struct TimelineDayItem: View {
     private var moonColor: Color { Color(red: 1.0, green: 0.85, blue: 0.4) }
 
     var body: some View {
-        VStack(spacing: 8) {
-            // 1. Label oben (Tag X)
+        VStack(spacing: 4) {
+            // 1. Fajr-Zeit oben (Sahur-Ende)
+            if let fajr = fajrTime {
+                Text(fajr)
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundColor(.secondary.opacity(0.8))
+            } else {
+                Text(" ")
+                    .font(.system(size: 9))
+            }
+
+            // 2. Label (Tag X)
             Text("Tag \(dayNumber)")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundColor(labelColor)
                 .opacity(state == .future ? 0.6 : 1.0)
 
-            // 2. Der Bubble / Kreis
+            // 3. Der Bubble / Kreis
             ZStack {
-                // Hintergrundkreis
                 Circle()
                     .fill(backgroundColor)
                     .frame(width: 56, height: 56)
                     .shadow(color: state == .current ? activeColor.opacity(0.4) : .clear, radius: 8, y: 4)
                     .overlay(
-                        // Ring für heute oder ausgewählten Tag
                         Circle()
                             .stroke(ringColor, lineWidth: 2)
                             .scaleEffect(1.1)
                             .opacity(showRing ? 1 : 0)
                     )
-
-                // Inhalt des Kreises
                 iconView
             }
             .scaleEffect(state == .current || isSelected ? 1.1 : 1.0)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: state)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isSelected)
 
-            // 3. Datum unten (z.B. 18. Feb)
+            // 4. Datum unten (z.B. 18. Feb)
             Text(dateFormatter.string(from: date))
                 .font(.system(size: 10, weight: .medium, design: .rounded))
                 .foregroundColor(.secondary)
+
+            // 5. Iftar-Zeit unten (Fastenbrechen)
+            if let iftar = iftarTime {
+                Text(iftar)
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundColor(activeColor.opacity(0.8))
+            } else {
+                Text(" ")
+                    .font(.system(size: 9))
+            }
         }
     }
 

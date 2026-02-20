@@ -12,6 +12,7 @@ import ConfettiSwiftUI
 struct RamadanView: View {
     @ObservedObject var manager: PrayerManager
     @ObservedObject var ramadanManager: RamadanManager
+    @ObservedObject var prayerTimeManager: PrayerTimeManager
     @Binding var selectedTab: Int
     @Environment(\.colorScheme) private var colorScheme
 
@@ -115,7 +116,9 @@ struct RamadanView: View {
                 RamadanTimelineView(
                     currentDay: ramadanManager.isRamadanActive ? ramadanManager.currentDay : 0,
                     completedDays: ramadanManager.completedDays,
+                    totalDays: ramadanManager.totalDays,
                     ramadanStart: ramadanManager.ramadanStart,
+                    monthlyTimes: prayerTimeManager.getCachedMonthlyTimes(),
                     onDayTapped: { date in
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             // Wenn der gleiche Tag nochmal getippt wird → Auswahl aufheben
@@ -385,6 +388,6 @@ struct RamadanView: View {
 }
 
 #Preview {
-    RamadanView(manager: PrayerManager(), ramadanManager: RamadanManager(), selectedTab: .constant(1))
+    RamadanView(manager: PrayerManager(), ramadanManager: RamadanManager(), prayerTimeManager: PrayerTimeManager(), selectedTab: .constant(1))
 }
 

@@ -32,6 +32,8 @@ struct WhatsNewView: View {
             // Features
             VStack(alignment: .leading, spacing: 16) {
                 FeatureRow(icon: "arrow.up.circle.fill", text: "whats_new_qibla")
+                FeatureRow(icon: "arrow.counterclockwise", text: "whats_new_ramadan_catchup")
+                FeatureRow(icon: "clock", text: "whats_new_ramadan_times")
             }
             .padding(20)
             .background(cardBackground)

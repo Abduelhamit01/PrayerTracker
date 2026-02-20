@@ -167,8 +167,6 @@ struct ContentView: View {
             .fullScreenCover(isPresented: $showSettings) {
                 NavigationStack {
                     SettingsView(prayerTimeManager: prayerTimeManager)
-                        .navigationTitle("Settings")
-                        .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 Button {
@@ -220,7 +218,7 @@ struct ContentView: View {
     // MARK: - Ramadan Tab
 
     private var ramadanTab: some View {
-        RamadanView(manager: manager, ramadanManager: ramadanManager, selectedTab: $selectedTab)
+        RamadanView(manager: manager, ramadanManager: ramadanManager, prayerTimeManager: prayerTimeManager, selectedTab: $selectedTab)
             .tabItem {
                 Label("Ramadan", systemImage: "moon.stars.fill")
             }

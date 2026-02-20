@@ -45,7 +45,6 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationStack {
             List {
                 // MARK: - Appearance Section
                 Section(header: Text("design")) {
@@ -154,7 +153,6 @@ struct SettingsView: View {
                 Text("data_cannot_recover")
             }
             .preferredColorScheme(appearance.colorScheme)
-        }
     }
     
     private func sendEmail() {
@@ -322,5 +320,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(prayerTimeManager: PrayerTimeManager())
+    NavigationStack {
+        SettingsView(prayerTimeManager: PrayerTimeManager())
+    }
 }

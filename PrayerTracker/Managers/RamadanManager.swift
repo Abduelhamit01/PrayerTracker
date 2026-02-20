@@ -21,7 +21,7 @@ class RamadanManager: ObservableObject {
         return formatter
     }()
 
-    // Ramadan 2026: 19. Februar - 20. März (30 Tage)
+    // Ramadan 2026: 19. Februar - 19. März (29 Tage)
     let ramadanStart: Date = {
         var components = DateComponents()
         components.year = 2026
@@ -34,11 +34,11 @@ class RamadanManager: ObservableObject {
         var components = DateComponents()
         components.year = 2026
         components.month = 3
-        components.day = 20
+        components.day = 19
         return Calendar.current.date(from: components)!
     }()
 
-    let totalDays: Int = 30
+    let totalDays: Int = 29
 
     init() {
         if let data = UserDefaults.standard.data(forKey: storageKey),
