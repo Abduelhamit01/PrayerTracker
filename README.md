@@ -8,6 +8,7 @@ A simple iOS app to track your daily prayers.
 - Mark Fardh and Sunnah prayers as completed
 - Calendar view with color-coded status (green/yellow/red)
 - 30-day statistics
+- Qibla
 - Weekly overview
 - Dark mode support
 - Available in German, English, and Turkish
