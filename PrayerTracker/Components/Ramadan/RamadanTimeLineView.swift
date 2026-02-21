@@ -46,7 +46,7 @@ struct RamadanTimelineView: View {
                         )
                         .id(day)
                         .onTapGesture {
-                            if dayState == .missed || dayState == .current {
+                            if dayState == .missed {
                                 onDayTapped?(dayDate)
                             }
                         }
@@ -177,7 +177,7 @@ struct TimelineDayItem: View {
                     )
                 iconView
             }
-            .scaleEffect(state == .current || isSelected ? 1.1 : 1.0)
+            .scaleEffect(state == .current || isSelected ? 0.8 : 0.9)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: state)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isSelected)
 
@@ -259,4 +259,42 @@ struct TimelineDayItem: View {
         formatter.locale = Locale(identifier: "de_DE")
         return formatter
     }
+}
+
+#Preview("TimelineDayItem States") {
+    VStack(spacing: 16) {
+        TimelineDayItem(
+            dayNumber: 10,
+            date: Date(),
+            state: .current,
+            moonIcon: "moonphase.full.moon",
+            isSelected: true,
+            fajrTime: "05:15",
+            iftarTime: "17:45"
+        )
+        TimelineDayItem(
+            dayNumber: 9,
+            date: Date(),
+            state: .completed,
+            moonIcon: "moonphase.waxing.gibbous",
+            fajrTime: "05:16",
+            iftarTime: "17:44"
+        )
+        TimelineDayItem(
+            dayNumber: 8,
+            date: Date(),
+            state: .missed,
+            moonIcon: "moonphase.first.quarter",
+            fajrTime: "05:18",
+            iftarTime: "17:42"
+        )
+        TimelineDayItem(
+            dayNumber: 11,
+            date: Date(),
+            state: .future,
+            moonIcon: "moonphase.waning.crescent"
+        )
+    }
+    .padding()
+    .background(Color(.systemGroupedBackground))
 }
